@@ -15,13 +15,19 @@ function getInputs() {
 			return [0, 0, 0];
 		}
 		logHeroSouls = exponent + Math.log10(mantissa);
-	} else { logHeroSouls = parseFloat(HSInput || 0); }
+		mantissa = Math.pow(10, logHeroSouls % 1).toFixed(3);
+		exponent = Math.floor(logHeroSouls);
+		$("#hero_souls").val(mantissa + "e" + exponent);
+	} else {
+		logHeroSouls = parseFloat(HSInput || 0);
+		$("#hero_souls").val(logHeroSouls);
+	}
     if (!(logHeroSouls > 0)) {
         alert("Calculation failed. logHeroSouls must be a positive number.");
 		$("#hero_souls").val(150);
         return [0, 0, 0];
     }
-	$("#hero_souls").val(logHeroSouls.toFixed(3));
+	
 	
 	let xyliqilLevel = parseInt($("#xyliqil_level").val() || 0);
 	if (!(xyliqilLevel >= 0)) { xyliqilLevel = 0; }
