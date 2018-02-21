@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="content-type" content="text/html;">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>CH Timelapse Calculator</title>
+	<link rel="stylesheet" href="css/normalize.css">
+	<link rel="stylesheet" href="css/main-v001.css">
+	<link rel="icon" type="image/png" href="Chronos.png">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+	<body>
+		<div class="container">
+			<div class="boxes">
+				<div class="box-12">
+					<div>
+						<div class="title">Info</div>
+						<div class="content">
+							<p>Send your Feedback to: <a href="https://www.reddit.com/user/Driej/">https://www.reddit.com/user/Driej/</a></p>
+							<p>Keep at least one Auto Clicker unassigned or you will not benefit from Nogardnit, causing you to lose thousands of zones. (last tested Feb 19 2018)</p>
+							<p>Stop Timelapsing when the zone gain is too low for your taste.</p>
+						</div>
+					</div>
+				</div>
+				<div class="box-4">
+					<div>
+						<div class="title">Inputs</div>
+						<div class="content">
+							<div class="numberInput">
+								<p>logHeroSouls:</p>
+								<input value="150" id="hero_souls" type="text">
+							</div>
+							<div class="numberInput">
+								<p>Xyliqil:</p>
+								<input value="0" id="xyliqil_level" type="text">
+							</div>
+							<div class="numberInput">
+								<p>Chor'gorloth:</p>
+								<input value="0" id="chor_level" type="text">
+							</div>
+							<br><button id="calculateButton" onclick="refresh()">Calculate</button>
+						</div>
+					</div>
+				</div>
+				<div class="box-8">
+					<div>
+						<div class="title">Timelapses</div>
+						<div class="content">
+							<table id="TimelapsesTable" cellspacing="0">
+								<thead><tr>
+									<th>Duration</th>
+									<th>Hero</th>
+									<th>Level</th>
+									<th>Zone</th>
+								</tr></thead>
+								<tbody>
+									
+								</tbody>
+							</table>
+							<br>
+							<div id="RubyCost"></div>
+							<div id="Recommend"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="js/main.js"></script>
+	</body>
+</html>
