@@ -12,7 +12,7 @@ function readSave() {
 			}
 			data = JSON.parse(atob(txt));
 		}
-		$("#hero_souls").val(data.totalHeroSoulsFromAscensions);
+		$("#hero_souls").val(data.stats.currentAscension.heroSoulsEnd);
 		let outsiders = data.outsiders.outsiders;
 		$("#xyliqil_level").val(outsiders[1].level);
 		$("#chor_level").val(outsiders[2].level);
