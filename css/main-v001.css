@@ -68,8 +68,8 @@
 input {
 	border: none;
 	padding: 5px;
-	width: 68px;
-	text-align: center;
+	width: 84px;
+	text-align: left;
 	font-size: 14px;
 	background-color: #eee;
 	transition: background-color 0.3s;
