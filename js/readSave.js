@@ -12,7 +12,15 @@ function readSave() {
 			}
 			data = JSON.parse(atob(txt));
 		}
-		$("#hero_souls").val(data.stats.currentAscension.heroSoulsEnd);
+		let primalSouls = data.primalSouls;
+		let heroSoulsEnd = data.stats.currentAscension.heroSoulsEnd;
+		let logHeroSoulsOnAscend = parseFloat(primalSouls.substr(primalSouls.lastIndexOf("e") + 1));
+		let logHeroSoulsCurrent =  parseFloat(heroSoulsEnd.substr(heroSoulsEnd.lastIndexOf("e") + 1));
+		if (logHeroSoulsOnAscend > logHeroSoulsCurrent) {
+			$("#hero_souls").val(primalSouls);
+		} else {
+			$("#hero_souls").val(heroSoulsEnd);
+		}
 		let outsiders = data.outsiders.outsiders;
 		$("#xyliqil_level").val(outsiders[1].level);
 		$("#chor_level").val(outsiders[2].level);
