@@ -2,13 +2,26 @@
 Math.log10 = (x) => Math.log(x) / Math.LN10;
 
 function getInputs() {
-    let logHeroSouls = parseInt($("#hero_souls").val() || 0);
+	let HSInput = $("#hero_souls").val()
+	let logHeroSouls;
+	if (HSInput.includes("e")) {
+		let mantissa = HSInput.substr(0, HSInput.indexOf("e"));
+		let exponent = HSInput.substr(HSInput.lastIndexOf("e") + 1);
+		mantissa = parseFloat(mantissa || 0);
+		exponent = parseFloat(exponent || 0);
+		if((mantissa === NaN) || (exponent=== NaN)) {
+			alert("Calculation failed. logHeroSouls must be a positive number.");
+			$("#hero_souls").val(150);
+			return [0, 0, 0];
+		}
+		logHeroSouls = exponent + Math.log10(mantissa);
+	} else { logHeroSouls = parseFloat(HSInput || 0); }
     if (!(logHeroSouls > 0)) {
         alert("Calculation failed. logHeroSouls must be a positive number.");
 		$("#hero_souls").val(150);
         return [0, 0, 0];
     }
-	$("#hero_souls").val(logHeroSouls);
+	$("#hero_souls").val(logHeroSouls.toFixed(3));
 	
 	let xyliqilLevel = parseInt($("#xyliqil_level").val() || 0);
 	if (!(xyliqilLevel >= 0)) { xyliqilLevel = 0; }
