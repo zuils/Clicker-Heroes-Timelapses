@@ -29,6 +29,7 @@ function getInputs() {
     }
 	
 	
+	
 	let xyliqilLevel = parseInt($("#xyliqil_level").val() || 0);
 	if (!(xyliqilLevel >= 0)) { xyliqilLevel = 0; }
 	$("#xyliqil_level").val(xyliqilLevel);
