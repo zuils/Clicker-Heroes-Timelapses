@@ -357,6 +357,7 @@ function refresh (test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 
 			if (minutes < 10) minutes = "0" + minutes;
 			if (seconds < 10) seconds = "0" + seconds;
 			let duration = hours + ":" + minutes + ":" + seconds;
+			if (bestHero === "Wepwawet2") { bestHero = "Wepwawet"; }
 			timelapses.push({
 				duration,
 				bestHero,
