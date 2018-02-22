@@ -406,8 +406,6 @@ function test() {
     for (let i = 0; i < cases.length; i++) {
         readout += "	" + refresh(true, cases[i]) + ",\n";
     }
-	console.log(readout);
-	readout = "";
 	for (let i = 1; i < 4; i++) {
 		for (let j = 1; j < 4; j++) {
 			readout += "	" + refresh(true, 5000, i * 10, j * 50) + ",\n";
@@ -415,7 +413,7 @@ function test() {
     }
     readout = readout.slice(0, -2);
     readout += "\n]";
-    console.log(readout);
+	$("#savegame").val(readout);
 }
 
 $("#hero_souls").keyup((ev) => {
