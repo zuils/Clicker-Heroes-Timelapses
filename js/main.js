@@ -178,14 +178,14 @@ let heroBaseDps = {
     Xavira4: 14475.4585,
     Xavira5: 15348.4585,
     Cadu0: 26446.3258,
-    Ceus1: 26446.1931,
-    Cadu1: 26446.3258,
-    Ceus2: 26446.1931,
-    Cadu2: 26446.3258,
-    Ceus3: 26446.1931,
-    Cadu3: 26446.3258,
-    Ceus4: 26446.1931,
-    Cadu4: 26446.3258,
+    Ceus1: 27444.1931,
+    Cadu1: 28544.3258,
+    Ceus2: 29742.1931,
+    Cadu2: 31042.3258,
+    Ceus3: 32440.1931,
+    Cadu3: 33940.3258,
+    Ceus4: 35538.1931,
+    Cadu4: 37238.3258,
     Maw0: 61732.0604,
     Maw1: 63730.0604,
     Maw2: 65828.0604,
@@ -232,10 +232,8 @@ function findHeroDps(bestHero, heroLevel, heroType, gilds) {
 let hp500 = 1 + Math.log10(1.55) * 139 + Math.log10(1.145) * 360;
 let hp200k1 = Math.log10(1.24) + 25409;
 
-function findHighestIdleZone(logHeroSouls, heroDps, xyliqilLevel) {
-    let ancientDps = logHeroSouls * 2.4 + Math.log10(1.5) * 2 * xyliqilLevel;
-    let totalDps = heroDps + ancientDps;
-    if (totalDps < 50) { return 0; } else if (totalDps < hp200k1) {
+function findHighestZone(totalDps) {
+	if (totalDps < 50) { return 130; } else if (totalDps < hp200k1) {
         let logHealth = hp500;
         this.zone = 200001;
         for (let z = 501; z < 200001; z++) {
@@ -248,7 +246,21 @@ function findHighestIdleZone(logHeroSouls, heroDps, xyliqilLevel) {
     } else {
         this.zone = (totalDps - hp200k1) / Math.log10(1.545) + 200001;
     }
-    return Math.floor(this.zone);
+	return Math.floor(this.zone);
+}
+
+function findHighestIdleZone(logHeroSouls, heroDps, xyliqilLevel) {
+    let ancientDps = logHeroSouls * 2.4 + Math.log10(1.5) * 2 * xyliqilLevel;
+    let totalDps = heroDps + ancientDps;
+	let zone = findHighestZone(totalDps);
+    return zone;
+}
+
+function findHighestActiveZone(logHeroSouls, heroDps) {
+	let ancientDps = logHeroSouls * 2.9;
+	let totalDps = heroDps + ancientDps;
+	let zone = findHighestZone(totalDps);
+	return zone;
 }
 
 function refresh (test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 0, ) {
@@ -283,19 +295,19 @@ function refresh (test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 
         let heroDps = findHeroDps(bestHero, heroLevel, heroType, gilds);
         let highestZone = findHighestIdleZone(this.logHeroSouls, heroDps, this.xyliqilLevel);
 
-        zonesGained = highestZone - startingZone;
+		zonesGained = highestZone - startingZone;
         let duration;
         if (zonesGained < minimumZoneGain) { break; }
         if (zonesGained > 144000) {
-            duration = 48;
+            duration = "48h";
             zonesGained = Math.min(216000, zonesGained);
             rubyCost += 30;
         } else if (zonesGained > 72000) {
-            duration = 24;
+            duration = "24h";
             zonesGained = Math.min(108000, zonesGained);
             rubyCost += 20;
         } else {
-            duration = 8;
+            duration = "8h";
             zonesGained = Math.min(36000, zonesGained);
             rubyCost += 10;
         }
@@ -313,6 +325,39 @@ function refresh (test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 
 
         startingZone = highestZone;
     } while (zonesGained >= minimumZoneGain);
+	
+	let timelapseZoneMax = startingZone;
+	let iterations = 0;
+	
+	do {
+		let logGold = 2 + this.logHeroSouls * 1.5 + Math.log10(1.15) * startingZone;
+		logGold += Math.log10(1 / (1 - 1 / 1.15));
+		let [bestHero, heroType] = findBestHero(logGold);
+        let heroLevel = Math.floor((logGold - heroCosts1[bestHero]) / Math.log10(1.07));
+        let heroDps = findHeroDps(bestHero, heroLevel, heroType, gilds);
+		let highestZone = findHighestActiveZone(this.logHeroSouls, heroDps);
+		
+		zonesGained = highestZone - startingZone;
+		if (zonesGained <= 10) {
+			let activeZonesGained = startingZone - timelapseZoneMax;
+			let durationSeconds = Math.ceil(activeZonesGained / 8200 * 3600);
+			let hours = Math.floor(durationSeconds / 3600);
+			let minutes = Math.floor((durationSeconds - (hours * 3600)) / 60);
+			let seconds = durationSeconds - hours * 3600 - minutes * 60;
+			if (hours   < 10) hours   = "0" + hours;
+			if (minutes < 10) minutes = "0" + minutes;
+			if (seconds < 10) seconds = "0" + seconds;
+			let duration = hours + ":" + minutes + ":" + seconds;
+			timelapses.push({
+				duration,
+				bestHero,
+				heroLevel,
+				zone: highestZone,
+				zoneDisplay: highestZone.toLocaleString() + " (max zone)",
+			});
+		} else
+			startingZone = highestZone;
+	} while (zonesGained > 10);
 
     // Test log
     if (test) {
@@ -329,7 +374,7 @@ function refresh (test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 
     let toappend = "";
     for (let t = 0; t < timelapses.length; t++) {
         let row = timelapses[t];
-        toappend += "<tr><td>" + row.duration + "h</td><td>" + row.bestHero + "</td><td>" + row.heroLevel.toLocaleString() + "</td><td>" + row.zoneDisplay + "</td>";
+        toappend += "<tr><td>" + row.duration + "</td><td>" + row.bestHero + "</td><td>" + row.heroLevel.toLocaleString() + "</td><td>" + row.zoneDisplay + "</td>";
     }
     $("#TimelapsesTable tbody").html(toappend);
     $("#RubyCost").html("Total Rubies: " + rubyCost);
