@@ -263,6 +263,15 @@ function findHighestActiveZone(logHeroSouls, heroDps) {
 	return zone;
 }
 
+function getMonsterGold(level, logHeroSouls) {
+	let ancientGold = logHeroSouls * 1.5;
+	if (level < 140) {
+		return Math.log10(1.6) * level + ancientGold - Math.log10(15);
+	} else {
+		return Math.log10(1.15) * (level - 140) + Math.log10(1.6) * 140 + ancientGold - Math.log10(15);
+	}
+}
+
 function refresh (test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 0, ) {
     // Inputs
     if (test) {
@@ -276,7 +285,7 @@ function refresh (test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 
 	
 	let gilds = Math.max(1, Math.floor((this.logHeroSouls - 5) / Math.log10(1.25) / 2) - 9);
 	let baseHeroSouls = this.logHeroSouls;
-	this.logHeroSouls += Math.log10(1 / 0.95) * this.chorLevel;
+	this.logHeroSouls += Math.log10(1 / 0.95) * this.chorLevel - 2;
 
     let	startingZone = 0;
     let	timelapses = [];
@@ -285,7 +294,7 @@ function refresh (test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 
 	let minimumZoneGain = 8200;
 
     do {
-		let logGold = 2 + this.logHeroSouls * 1.5 + Math.log10(1.15) * startingZone;
+		let logGold = getMonsterGold(startingZone, this.logHeroSouls)
 		if (startingZone > 0) {
 			logGold += Math.log10(1 / (1 - 1 / 1.15));
 			logGold += Math.log10(1.5) * this.xyliqilLevel;
@@ -330,7 +339,7 @@ function refresh (test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 
 	let iterations = 0;
 	
 	do {
-		let logGold = 2 + this.logHeroSouls * 1.5 + Math.log10(1.15) * startingZone;
+		let logGold = getMonsterGold(startingZone, this.logHeroSouls);
 		logGold += Math.log10(1 / (1 - 1 / 1.15));
 		let [bestHero, heroType] = findBestHero(logGold);
         let heroLevel = Math.floor((logGold - heroCosts1[bestHero]) / Math.log10(1.07));
