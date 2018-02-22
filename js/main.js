@@ -266,9 +266,9 @@ function findHighestActiveZone(logHeroSouls, heroDps) {
 function getMonsterGold(level, logHeroSouls) {
 	let ancientGold = logHeroSouls * 1.5;
 	if (level < 140) {
-		return Math.log10(1.6) * level + ancientGold - Math.log10(15);
+		return Math.log10(1.6) * (level - 1) + ancientGold - Math.log10(15);
 	} else {
-		return Math.log10(1.15) * (level - 140) + Math.log10(1.6) * 140 + ancientGold - Math.log10(15);
+		return Math.log10(1.15) * (level - 140) + Math.log10(1.6) * 139 + ancientGold - Math.log10(15);
 	}
 }
 
