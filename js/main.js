@@ -22,7 +22,7 @@ function getInputs() {
 		logHeroSouls = parseFloat(HSInput || 0);
 		$("#hero_souls").val(logHeroSouls);
 	}
-    if (!(logHeroSouls > 0)) {
+    if (!(logHeroSouls >= 0)) {
         alert("Calculation failed. logHeroSouls must be a positive number.");
 		$("#hero_souls").val(150);
         return [0, 0, 0];
@@ -45,7 +45,7 @@ function getInputs() {
 let costThousand = Math.log10(1.07) * 1000;
 let dogcog = 10;
 let heroCosts = {
-    Samurai: 0,
+    Samurai: -10000,
     Atlas: 55 + costThousand - dogcog,
     Terra: 70 + costThousand - dogcog,
     Phthalo: 85 + costThousand - dogcog,
@@ -229,11 +229,17 @@ function findHeroDps(bestHero, heroLevel, heroType, gilds) {
     return baseDps + dpsMultiplier25 + dpsMultiplier1000 + gildDps;
 }
 
+let cacheHp140 = Math.log10(1.55)*139 + 1;
+let hp141 = 1 + Math.log10(1.145) + cacheHp140;
 let hp500 = 1 + Math.log10(1.55) * 139 + Math.log10(1.145) * 360;
 let hp200k1 = Math.log10(1.24) + 25409;
 
 function findHighestZone(totalDps) {
-	if (totalDps < 50) { return 130; } else if (totalDps < hp200k1) {
+	if (totalDps < hp141) {
+		return 130;
+	} else if (totalDps <= hp500) {
+		return 500;
+	} else if (totalDps < hp200k1) {
         let logHealth = hp500;
         this.zone = 200001;
         for (let z = 501; z < 200001; z++) {
@@ -281,7 +287,7 @@ function refresh (test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 
     } else {
 		[this.logHeroSouls, this.xyliqilLevel, this.chorLevel] = getInputs();
 	}
-    if (this.logHeroSouls === 0) { return false; }
+    if (this.logHeroSouls < 0) { return false; }
 	
 	let gilds = Math.max(1, Math.floor((this.logHeroSouls - 5) / Math.log10(1.25) / 2) - 9);
 	let baseHeroSouls = this.logHeroSouls;
