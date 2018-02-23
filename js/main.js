@@ -25,7 +25,7 @@ function getInputs() {
     if (!(logHeroSouls >= 0)) {
         alert("Calculation failed. logHeroSouls must be a positive number.");
 		$("#hero_souls").val(150);
-        return [0, 0, 0];
+        return [-1, 0, 0];
     }
 	
 	
