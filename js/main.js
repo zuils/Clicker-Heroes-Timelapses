@@ -315,7 +315,7 @@ function refresh (test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 
 		zonesGained = highestZone - startingZone;
         let duration;
         if (zonesGained < minimumZoneGain) { break; }
-		if (this.use168h && zonesGained > 324000) {
+		if (this.use168h && zonesGained > 360000) {
 			duration = "168h";
             zonesGained = Math.min(756000, zonesGained);
             rubyCost += 50;
