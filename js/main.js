@@ -289,6 +289,7 @@ function refresh (test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 
 	}
     if (this.logHeroSouls < 0) { return false; }
 	
+	this.use168h = $("#TL168").is(":checked");
 	let gilds = Math.max(1, Math.floor((this.logHeroSouls - 5) / Math.log10(1.25) / 2) - 9);
 	let baseHeroSouls = this.logHeroSouls;
 	this.logHeroSouls += Math.log10(1 / 0.95) * this.chorLevel - 2;
@@ -307,13 +308,18 @@ function refresh (test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 
 		}
         let [bestHero, heroType] = findBestHero(logGold);
         let heroLevel = Math.floor((logGold - heroCosts1[bestHero]) / Math.log10(1.07));
+		heroLevel = Math.max(1, heroLevel);
         let heroDps = findHeroDps(bestHero, heroLevel, heroType, gilds);
         let highestZone = findHighestIdleZone(this.logHeroSouls, heroDps, this.xyliqilLevel);
 
 		zonesGained = highestZone - startingZone;
         let duration;
         if (zonesGained < minimumZoneGain) { break; }
-        if (zonesGained > 144000) {
+		if (this.use168h && zonesGained > 324000) {
+			duration = "168h";
+            zonesGained = Math.min(756000, zonesGained);
+            rubyCost += 50;
+		}else if (zonesGained > 144000) {
             duration = "48h";
             zonesGained = Math.min(216000, zonesGained);
             rubyCost += 30;
