@@ -42,6 +42,37 @@ function getInputs() {
     return [logHeroSouls, xyliqilLevel, chorLevel];
 }
 
+let e11Levels = {
+	Rose1: 602000,
+	Rose2: 1429750,
+	Rose3: 2257500,
+	Rose4: 3085250,
+	Rose5: 3913000,
+	Sophia1: 677250,
+	Sophia2: 1505000,
+	Sophia3: 2332750,
+	Sophia4: 3160500,
+	Sophia5: 3988250,
+	Blanche1: 752500,
+	Blanche2: 1580250,
+	Blanche3: 2408000,
+	Blanche4: 3235750,
+	Blanche5: 4063500,
+	Dorothy1: 827750,
+	Dorothy2: 1655500,
+	Dorothy3: 2483250,
+	Dorothy4: 3311000,
+	Dorothy5: 4138750,
+};
+let e11Dps = {
+	Rose: Math.log10(8.586) + 148592,
+	Sophia: Math.log10(6.326) + 158831,
+	Blanche: Math.log10(4.661) + 178104,
+	Dorothy: Math.log10(3.434) + 199738,
+}
+let e11Upgrade = 5798;
+let e11CostScale = Math.log10(1.22);
+let e11DpsScale = Math.log10(1000);
 let costThousand = Math.log10(1.07) * 1000;
 let dogcog = 10;
 let heroCosts = {
@@ -113,40 +144,20 @@ let heroCosts1 = {
     Wepwawet: 235 - dogcog,
     BettyClicker: Math.log10(20000) - dogcog,
     KingMidas: Math.log10(4e12) - dogcog,
-    Wepwawet2: 235 - dogcog,
     Tsuchi: 500 - dogcog,
     Skogur: 1000 - dogcog,
     Moeru: 2000 - dogcog,
     Zilar: 4000 - dogcog,
     Madzi: 8000 - dogcog,
-    Xavira0: 14000 - dogcog,
-    Xavira1: 14000 - dogcog,
-    Xavira2: 14000 - dogcog,
-    Xavira3: 14000 - dogcog,
-    Xavira4: 14000 - dogcog,
-    Xavira5: 14000 - dogcog,
-    Cadu0: 25500 - dogcog,
-    Ceus1: 25500 - dogcog,
-    Cadu1: 25500 - dogcog,
-    Ceus2: 25500 - dogcog,
-    Cadu2: 25500 - dogcog,
-    Ceus3: 25500 - dogcog,
-    Cadu3: 25500 - dogcog,
-    Ceus4: 25500 - dogcog,
-    Cadu4: 25500 - dogcog,
-    Maw0: 45500 - dogcog,
-    Maw1: 45500 - dogcog,
-    Maw2: 45500 - dogcog,
-    Maw3: 45500 - dogcog,
-    Maw4: 45500 - dogcog,
-    Maw5: 45500 - dogcog,
-    Maw6: 45500 - dogcog,
-    Yachiyll: 72000 - dogcog,
-    Yachiyl2: 72000 - dogcog,
-    Yachiyl3: 72000 - dogcog,
-    Yachiyl4: 72000 - dogcog,
-    Yachiyl5: 72000 - dogcog,
-    Yachiyl6: 72000 - dogcog,
+    Xavira: 14000 - dogcog,
+    Cadu: 25500 - dogcog,
+    Ceus: 25500 - dogcog,
+    Maw: 45500 - dogcog,
+    Yachiyl: 72000 - dogcog,
+	Rose: 108000 - dogcog,
+	Sophia: 114500 - dogcog,
+	Blanche: 127500 - dogcog,
+	Dorothy: 142200 - dogcog,
 };
 let heroBaseDps = {
     Samurai: 5.2858,
@@ -201,6 +212,20 @@ let heroBaseDps = {
     Yachiyl6: 116981.9278,
 };
 
+// Populate e11 heroes
+let newHeroes = ["Rose", "Sophia", "Blanche", "Dorothy"];
+for (let l = 0; l < 6; l++) {
+	for (let q = 0; q < 4; q++) {
+		let hero = newHeroes[q];
+		let heroCost = heroCosts1[hero];
+		let heroDps = e11Dps[hero];
+		let heroUpgrade = hero + l;
+		let level = e11Levels[heroUpgrade] || 0;
+		heroCosts[heroUpgrade] = heroCost + level * e11CostScale;
+		heroBaseDps[heroUpgrade] = heroDps + e11Upgrade * l + 1.861426728;
+	}
+}
+
 function findBestHero(logGold) {
     let bestHero;
     let heroType = "old";
@@ -209,6 +234,7 @@ function findBestHero(logGold) {
             if (heroCosts[s] < logGold) {
                 bestHero = s;
                 if (s === "Xavira0") { heroType = "e10"; }
+				if (s === "Rose0") { heroType = "e11"; }
             }
         }
     }
@@ -218,13 +244,17 @@ function findBestHero(logGold) {
 function findHeroDps(bestHero, heroLevel, heroType, gilds) {
     let baseDps = heroBaseDps[bestHero] + Math.log10(heroLevel);
 	let damageMultiplier;
-	if (heroType === "e10") {
+	if (heroType === "e11") {
+		damageMultiplier = 1000;
+	} else if (heroType === "e10") {
 		damageMultiplier = 4.5;
 	} else {
 		damageMultiplier = 4;
 	}
     let dpsMultiplier25 = Math.log10(damageMultiplier) * Math.floor(Math.max(heroLevel - 175, 0) / 25);
-    let dpsMultiplier1000 = Math.log10(10 / damageMultiplier) * Math.min(Math.floor(heroLevel / 1000), 8);
+    let dpsMultiplier1000 = (heroType === "e11")
+		? 0
+		: Math.log10(10 / damageMultiplier) * Math.min(Math.floor(heroLevel / 1000), 8);
 	let gildDps = Math.log10(gilds);
     return baseDps + dpsMultiplier25 + dpsMultiplier1000 + gildDps;
 }
@@ -278,6 +308,17 @@ function getMonsterGold(level, logHeroSouls) {
 	}
 }
 
+function getHeroLevel(logGold, bestHero, heroType) {
+	let nameShort = bestHero.substring(0, bestHero.length - 1);
+	let baseCost = heroCosts1[nameShort]
+		? heroCosts1[nameShort]
+		: heroCosts1[bestHero];
+	let costMultiplier = (heroType == "e11" ) ? 1.22 : 1.07;
+	let heroLevel = Math.floor((logGold - baseCost) / Math.log10(costMultiplier));
+	heroLevel = Math.max(1, heroLevel);
+	return heroLevel
+}
+
 function refresh (test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 0, ) {
     // Inputs
     if (test) {
@@ -307,8 +348,7 @@ function refresh (test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 
 			logGold += Math.log10(1.5) * this.xyliqilLevel;
 		}
         let [bestHero, heroType] = findBestHero(logGold);
-        let heroLevel = Math.floor((logGold - heroCosts1[bestHero]) / Math.log10(1.07));
-		heroLevel = Math.max(1, heroLevel);
+		let heroLevel = getHeroLevel(logGold, bestHero, heroType);
         let heroDps = findHeroDps(bestHero, heroLevel, heroType, gilds);
         let highestZone = findHighestIdleZone(this.logHeroSouls, heroDps, this.xyliqilLevel);
 
@@ -354,7 +394,7 @@ function refresh (test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 
 		let logGold = getMonsterGold(startingZone, this.logHeroSouls);
 		logGold += Math.log10(1 / (1 - 1 / 1.15));
 		let [bestHero, heroType] = findBestHero(logGold);
-        let heroLevel = Math.floor((logGold - heroCosts1[bestHero]) / Math.log10(1.07));
+        let heroLevel = getHeroLevel(logGold, bestHero, heroType);
         let heroDps = findHeroDps(bestHero, heroLevel, heroType, gilds);
 		let highestZone = findHighestActiveZone(this.logHeroSouls, heroDps);
 		
@@ -400,7 +440,7 @@ function refresh (test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 
     }
     $("#TimelapsesTable tbody").html(toappend);
     $("#RubyCost").html("Total Rubies: " + rubyCost);
-    let canQA = (timelapses.length > 0)
+    /*let canQA = (timelapses.length > 0)
                 ? timelapses[timelapses.length - 1].zone < 1e7 // Change to 1e6 when patch e11 hits
                 : true;
     if ((rubyCost > 50) && canQA) {
@@ -409,7 +449,7 @@ function refresh (test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 
         $("#Recommend").html("Recommended Action: Use Timelapses as shown above");
     } else {
         $("#Recommend").html("Recommended Action: Save your rubies");
-    }
+    }*/
     $("#RubyCost").html("Total Rubies: " + rubyCost);
 }
 
