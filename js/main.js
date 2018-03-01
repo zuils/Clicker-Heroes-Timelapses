@@ -44,25 +44,25 @@ function getInputs() {
 
 let e11Levels = {
 	Rose1: 602000,
-	Rose2: 1429750,
-	Rose3: 2257500,
-	Rose4: 3085250,
-	Rose5: 3913000,
+	Rose2: 1204000,
+	Rose3: 1806000,
+	Rose4: 2408000,
+	Rose5: 3010000,
 	Sophia1: 677250,
-	Sophia2: 1505000,
-	Sophia3: 2332750,
-	Sophia4: 3160500,
-	Sophia5: 3988250,
+	Sophia2: 1279250,
+	Sophia3: 1881250,
+	Sophia4: 2483250,
+	Sophia5: 3085250,
 	Blanche1: 752500,
-	Blanche2: 1580250,
-	Blanche3: 2408000,
-	Blanche4: 3235750,
-	Blanche5: 4063500,
+	Blanche2: 1354500,
+	Blanche3: 1956500,
+	Blanche4: 2558500,
+	Blanche5: 3160500,
 	Dorothy1: 827750,
-	Dorothy2: 1655500,
-	Dorothy3: 2483250,
-	Dorothy4: 3311000,
-	Dorothy5: 4138750,
+	Dorothy2: 1429750,
+	Dorothy3: 1956500,
+	Dorothy4: 2633750,
+	Dorothy5: 3235750,
 };
 let e11Dps = {
 	Rose: Math.log10(8.586) + 148592,
@@ -225,6 +225,7 @@ for (let l = 0; l < 6; l++) {
 		heroBaseDps[heroUpgrade] = heroDps + e11Upgrade * l + 1.861426728;
 	}
 }
+heroCosts["Rose0"] += Math.log10(1.22) * 9825;
 
 function findBestHero(logGold) {
     let bestHero;
