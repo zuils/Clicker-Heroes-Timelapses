@@ -30,7 +30,6 @@ function readSave() {
 		$("#xyliqil_level").val(outsiders[1].level);
 		$("#chor_level").val(outsiders[2].level);
 		refresh();
-		$("#savegame").val(JSON.stringify(data,false,1));
 	} else if (txt)
 		$("#savegame").val("");
 }
