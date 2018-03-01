@@ -38,7 +38,7 @@ function getInputs() {
 	if (!(chorLevel >= 0)) { chorLevel = 0; }
 	if (chorLevel > 150) { chorLevel = 150; }
 	$("#chor_level").val(chorLevel);
-	
+
     return [logHeroSouls, xyliqilLevel, chorLevel];
 }
 
