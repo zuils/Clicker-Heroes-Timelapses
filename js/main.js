@@ -2,74 +2,72 @@
 Math.log10 = (x) => Math.log(x) / Math.LN10;
 
 function getInputs() {
-	let HSInput = $("#hero_souls").val()
-	let logHeroSouls;
-	if (HSInput.includes("e")) {
-		let mantissa = HSInput.substr(0, HSInput.indexOf("e"));
-		let exponent = HSInput.substr(HSInput.lastIndexOf("e") + 1);
-		mantissa = parseFloat(mantissa || 0);
-		exponent = parseFloat(exponent || 0);
-		if((mantissa === NaN) || (exponent=== NaN)) {
-			alert("Calculation failed. logHeroSouls must be a positive number.");
-			$("#hero_souls").val(150);
-			return [0, 0, 0];
-		}
-		logHeroSouls = exponent + Math.log10(mantissa);
-		mantissa = Math.pow(10, logHeroSouls % 1).toFixed(3);
-		exponent = Math.floor(logHeroSouls);
-		$("#hero_souls").val(mantissa + "e" + exponent);
-	} else {
-		logHeroSouls = parseFloat(HSInput || 0);
-		$("#hero_souls").val(logHeroSouls);
-	}
+    let heroSoulsInput = $("#hero_souls").val()
+    let logHeroSouls;
+    if (heroSoulsInput.includes("e")) {
+        let mantissa = heroSoulsInput.substr(0, heroSoulsInput.indexOf("e"));
+        let exponent = heroSoulsInput.substr(heroSoulsInput.lastIndexOf("e") + 1);
+        mantissa = parseFloat(mantissa || 0);
+        exponent = parseFloat(exponent || 0);
+        if ((isNaN(mantissa)) || isNaN(exponent)) {
+            alert("Calculation failed. logHeroSouls must be a positive number.");
+            $("#hero_souls").val(150);
+            return [0, 0, 0];
+        }
+        logHeroSouls = exponent + Math.log10(mantissa);
+        mantissa = Math.pow(10, logHeroSouls % 1).toFixed(3);
+        exponent = Math.floor(logHeroSouls);
+        $("#hero_souls").val(mantissa + "e" + exponent);
+    } else {
+        logHeroSouls = parseFloat(heroSoulsInput || 0);
+        $("#hero_souls").val(logHeroSouls);
+    }
     if (!(logHeroSouls >= 0)) {
         alert("Calculation failed. logHeroSouls must be a positive number.");
-		$("#hero_souls").val(150);
+        $("#hero_souls").val(150);
         return [-1, 0, 0];
     }
-	
-	
-	
-	let xyliqilLevel = parseInt($("#xyliqil_level").val() || 0);
-	if (!(xyliqilLevel >= 0)) { xyliqilLevel = 0; }
-	$("#xyliqil_level").val(xyliqilLevel);
-	
-	let chorLevel = parseInt($("#chor_level").val() || 0);
-	if (!(chorLevel >= 0)) { chorLevel = 0; }
-	if (chorLevel > 150) { chorLevel = 150; }
-	$("#chor_level").val(chorLevel);
+
+    let xyliqilLevel = parseInt($("#xyliqil_level").val() || 0);
+    if (!(xyliqilLevel >= 0)) { xyliqilLevel = 0; }
+    $("#xyliqil_level").val(xyliqilLevel);
+
+    let chorLevel = parseInt($("#chor_level").val() || 0);
+    if (!(chorLevel >= 0)) { chorLevel = 0; }
+    if (chorLevel > 150) { chorLevel = 150; }
+    $("#chor_level").val(chorLevel);
 
     return [logHeroSouls, xyliqilLevel, chorLevel];
 }
 
 let e11Levels = {
-	Rose1: 602000,
-	Rose2: 1204000,
-	Rose3: 1806000,
-	Rose4: 2408000,
-	Rose5: 3010000,
-	Sophia1: 677250,
-	Sophia2: 1279250,
-	Sophia3: 1881250,
-	Sophia4: 2483250,
-	Sophia5: 3085250,
-	Blanche1: 752500,
-	Blanche2: 1354500,
-	Blanche3: 1956500,
-	Blanche4: 2558500,
-	Blanche5: 3160500,
-	Dorothy1: 827750,
-	Dorothy2: 1429750,
-	Dorothy3: 1956500,
-	Dorothy4: 2633750,
-	Dorothy5: 3235750,
+    Rose1: 602000,
+    Rose2: 1204000,
+    Rose3: 1806000,
+    Rose4: 2408000,
+    Rose5: 3010000,
+    Sophia1: 677250,
+    Sophia2: 1279250,
+    Sophia3: 1881250,
+    Sophia4: 2483250,
+    Sophia5: 3085250,
+    Blanche1: 752500,
+    Blanche2: 1354500,
+    Blanche3: 1956500,
+    Blanche4: 2558500,
+    Blanche5: 3160500,
+    Dorothy1: 827750,
+    Dorothy2: 1429750,
+    Dorothy3: 1956500,
+    Dorothy4: 2633750,
+    Dorothy5: 3235750,
 };
 let e11Dps = {
-	Rose: Math.log10(8.586) + 148592,
-	Sophia: Math.log10(6.326) + 158831,
-	Blanche: Math.log10(4.661) + 178104,
-	Dorothy: Math.log10(3.434) + 199738,
-}
+    Rose: Math.log10(8.586) + 148592,
+    Sophia: Math.log10(6.326) + 158831,
+    Blanche: Math.log10(4.661) + 178104,
+    Dorothy: Math.log10(3.434) + 199738,
+};
 let e11Upgrade = 5798;
 let e11CostScale = Math.log10(1.22);
 let e11DpsScale = Math.log10(1000);
@@ -154,10 +152,10 @@ let heroCosts1 = {
     Ceus: 25500 - dogcog,
     Maw: 45500 - dogcog,
     Yachiyl: 72000 - dogcog,
-	Rose: 108000 - dogcog,
-	Sophia: 114500 - dogcog,
-	Blanche: 127500 - dogcog,
-	Dorothy: 142200 - dogcog,
+    Rose: 108000 - dogcog,
+    Sophia: 114500 - dogcog,
+    Blanche: 127500 - dogcog,
+    Dorothy: 142200 - dogcog,
 };
 let heroBaseDps = {
     Samurai: 5.2858,
@@ -215,15 +213,15 @@ let heroBaseDps = {
 // Populate e11 heroes
 let newHeroes = ["Rose", "Sophia", "Blanche", "Dorothy"];
 for (let l = 0; l < 6; l++) {
-	for (let q = 0; q < 4; q++) {
-		let hero = newHeroes[q];
-		let heroCost = heroCosts1[hero];
-		let heroDps = e11Dps[hero];
-		let heroUpgrade = hero + l;
-		let level = e11Levels[heroUpgrade] || 0;
-		heroCosts[heroUpgrade] = heroCost + level * e11CostScale;
-		heroBaseDps[heroUpgrade] = heroDps + e11Upgrade * l + 1.861426728;
-	}
+    for (let q = 0; q < 4; q++) {
+        let hero = newHeroes[q];
+        let heroCost = heroCosts1[hero];
+        let heroDps = e11Dps[hero];
+        let heroUpgrade = hero + l;
+        let level = e11Levels[heroUpgrade] || 0;
+        heroCosts[heroUpgrade] = heroCost + level * e11CostScale;
+        heroBaseDps[heroUpgrade] = heroDps + e11Upgrade * l + 1.861426728;
+    }
 }
 heroCosts["Rose0"] += Math.log10(1.22) * 9825;
 
@@ -235,7 +233,7 @@ function findBestHero(logGold) {
             if (heroCosts[s] < logGold) {
                 bestHero = s;
                 if (s === "Xavira0") { heroType = "e10"; }
-				if (s === "Rose0") { heroType = "e11"; }
+                if (s === "Rose0") { heroType = "e11"; }
             }
         }
     }
@@ -244,33 +242,33 @@ function findBestHero(logGold) {
 
 function findHeroDps(bestHero, heroLevel, heroType, gilds) {
     let baseDps = heroBaseDps[bestHero] + Math.log10(heroLevel);
-	let damageMultiplier;
-	if (heroType === "e11") {
-		damageMultiplier = 1000;
-	} else if (heroType === "e10") {
-		damageMultiplier = 4.5;
-	} else {
-		damageMultiplier = 4;
-	}
+    let damageMultiplier;
+    if (heroType === "e11") {
+        damageMultiplier = 1000;
+    } else if (heroType === "e10") {
+        damageMultiplier = 4.5;
+    } else {
+        damageMultiplier = 4;
+    }
     let dpsMultiplier25 = Math.log10(damageMultiplier) * Math.floor(Math.max(heroLevel - 175, 0) / 25);
     let dpsMultiplier1000 = (heroType === "e11")
-		? 0
-		: Math.log10(10 / damageMultiplier) * Math.min(Math.floor(heroLevel / 1000), 8);
-	let gildDps = Math.log10(gilds);
+        ? 0
+        : Math.log10(10 / damageMultiplier) * Math.min(Math.floor(heroLevel / 1000), 8);
+    let gildDps = Math.log10(gilds);
     return baseDps + dpsMultiplier25 + dpsMultiplier1000 + gildDps;
 }
 
-let cacheHp140 = Math.log10(1.55)*139 + 1;
+let cacheHp140 = Math.log10(1.55) * 139 + 1;
 let hp141 = 1 + Math.log10(1.145) + cacheHp140;
 let hp500 = 1 + Math.log10(1.55) * 139 + Math.log10(1.145) * 360;
 let hp200k1 = Math.log10(1.24) + 25409;
 
 function findHighestZone(totalDps) {
-	if (totalDps < hp141) {
-		return 130;
-	} else if (totalDps <= hp500) {
-		return 500;
-	} else if (totalDps < hp200k1) {
+    if (totalDps < hp141) {
+        return 130;
+    } else if (totalDps <= hp500) {
+        return 500;
+    } else if (totalDps < hp200k1) {
         let logHealth = hp500;
         this.zone = 200001;
         for (let z = 501; z < 200001; z++) {
@@ -283,84 +281,82 @@ function findHighestZone(totalDps) {
     } else {
         this.zone = (totalDps - hp200k1) / Math.log10(1.545) + 200001;
     }
-	return Math.floor(this.zone);
+    return Math.floor(this.zone);
 }
 
 function findHighestIdleZone(logHeroSouls, heroDps, xyliqilLevel) {
     let ancientDps = logHeroSouls * 2.4 + Math.log10(1.5) * 2 * xyliqilLevel;
     let totalDps = heroDps + ancientDps;
-	let zone = findHighestZone(totalDps);
-    return zone;
+    return findHighestZone(totalDps);
 }
 
 function findHighestActiveZone(logHeroSouls, heroDps) {
-	let ancientDps = logHeroSouls * 2.9;
-	let totalDps = heroDps + ancientDps;
-	let zone = findHighestZone(totalDps);
-	return zone;
+    let ancientDps = logHeroSouls * 2.9;
+    let totalDps = heroDps + ancientDps;
+    return findHighestZone(totalDps);
 }
 
 function getMonsterGold(level, logHeroSouls) {
-	let ancientGold = logHeroSouls * 1.5;
-	if (level < 140) {
-		return Math.log10(1.6) * (level - 1) + ancientGold - Math.log10(15);
-	} else {
-		return Math.log10(1.15) * (level - 140) + Math.log10(1.6) * 139 + ancientGold - Math.log10(15);
-	}
+    let ancientGold = logHeroSouls * 1.5;
+    if (level < 140) {
+        return Math.log10(1.6) * (level - 1) + ancientGold - Math.log10(15);
+    } else {
+        return Math.log10(1.15) * (level - 140) + Math.log10(1.6) * 139 + ancientGold - Math.log10(15);
+    }
 }
 
 function getHeroLevel(logGold, bestHero, heroType) {
-	let nameShort = bestHero.substring(0, bestHero.length - 1);
-	let baseCost = heroCosts1[nameShort]
-		? heroCosts1[nameShort]
-		: heroCosts1[bestHero];
-	let costMultiplier = (heroType == "e11" ) ? 1.22 : 1.07;
-	let heroLevel = Math.floor((logGold - baseCost) / Math.log10(costMultiplier));
-	heroLevel = Math.max(1, heroLevel);
-	return heroLevel
+    let nameShort = bestHero.substring(0, bestHero.length - 1);
+    let baseCost = heroCosts1[nameShort]
+        ? heroCosts1[nameShort]
+        : heroCosts1[bestHero];
+    let costMultiplier = (heroType === "e11" ) ? 1.22 : 1.07;
+    let heroLevel = Math.floor((logGold - baseCost) / Math.log10(costMultiplier));
+    heroLevel = Math.max(1, heroLevel);
+    return heroLevel;
 }
 
-function refresh (test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 0, ) {
+function refresh(test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 0) {
     // Inputs
     if (test) {
-		this.logHeroSouls = logHeroSouls;
-		this.xyliqilLevel = xyliqilLevel;
-		this.chorLevel = chorLevel;
+        this.logHeroSouls = logHeroSouls;
+        this.xyliqilLevel = xyliqilLevel;
+        this.chorLevel = chorLevel;
     } else {
-		[this.logHeroSouls, this.xyliqilLevel, this.chorLevel] = getInputs();
-	}
+        [this.logHeroSouls, this.xyliqilLevel, this.chorLevel] = getInputs();
+    }
     if (this.logHeroSouls < 0) { return false; }
-	
-	this.use168h = $("#TL168").is(":checked");
-	let gilds = Math.max(1, Math.floor((this.logHeroSouls - 5) / Math.log10(1.25) / 2) - 9);
-	let baseHeroSouls = this.logHeroSouls;
-	this.logHeroSouls += Math.log10(1 / 0.95) * this.chorLevel - 2;
+
+    this.use168h = $("#TL168").is(":checked");
+    let gilds = Math.max(1, Math.floor((this.logHeroSouls - 5) / Math.log10(1.25) / 2) - 9);
+    let baseHeroSouls = this.logHeroSouls;
+    this.logHeroSouls += Math.log10(1 / 0.95) * this.chorLevel - 2;
 
     let	startingZone = 0;
     let	timelapses = [];
     let zonesGained;
     let rubyCost = 0;
-	let minimumZoneGain = 8200;
+    let minimumZoneGain = 8200;
 
     do {
-		let logGold = getMonsterGold(startingZone, this.logHeroSouls)
-		if (startingZone > 0) {
-			logGold += Math.log10(1 / (1 - 1 / 1.15));
-			logGold += Math.log10(1.5) * this.xyliqilLevel;
-		}
+        let logGold = getMonsterGold(startingZone, this.logHeroSouls)
+        if (startingZone > 0) {
+            logGold += Math.log10(1 / (1 - 1 / 1.15));
+            logGold += Math.log10(1.5) * this.xyliqilLevel;
+        }
         let [bestHero, heroType] = findBestHero(logGold);
-		let heroLevel = getHeroLevel(logGold, bestHero, heroType);
+        let heroLevel = getHeroLevel(logGold, bestHero, heroType);
         let heroDps = findHeroDps(bestHero, heroLevel, heroType, gilds);
         let highestZone = findHighestIdleZone(this.logHeroSouls, heroDps, this.xyliqilLevel);
 
-		zonesGained = highestZone - startingZone;
+        zonesGained = highestZone - startingZone;
         let duration;
         if (zonesGained < minimumZoneGain) { break; }
-		if (this.use168h && zonesGained > 360000) {
-			duration = "168h";
+        if (this.use168h && zonesGained > 360000) {
+            duration = "168h";
             zonesGained = Math.min(756000, zonesGained);
             rubyCost += 50;
-		}else if (zonesGained > 144000) {
+        } else if (zonesGained > 144000) {
             duration = "48h";
             zonesGained = Math.min(216000, zonesGained);
             rubyCost += 30;
@@ -387,47 +383,47 @@ function refresh (test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 
 
         startingZone = highestZone;
     } while (zonesGained >= minimumZoneGain);
-	
-	let timelapseZoneMax = startingZone;
-	let iterations = 0;
-	
-	do {
-		let logGold = getMonsterGold(startingZone, this.logHeroSouls);
-		logGold += Math.log10(1 / (1 - 1 / 1.15));
-		let [bestHero, heroType] = findBestHero(logGold);
+
+    let timelapseZoneMax = startingZone;
+
+    do {
+        let logGold = getMonsterGold(startingZone, this.logHeroSouls);
+        logGold += Math.log10(1 / (1 - 1 / 1.15));
+        let [bestHero, heroType] = findBestHero(logGold);
         let heroLevel = getHeroLevel(logGold, bestHero, heroType);
         let heroDps = findHeroDps(bestHero, heroLevel, heroType, gilds);
-		let highestZone = findHighestActiveZone(this.logHeroSouls, heroDps);
-		
-		zonesGained = highestZone - startingZone;
-		if (zonesGained <= 10) {
-			let activeZonesGained = startingZone - timelapseZoneMax;
-			let durationSeconds = Math.ceil(activeZonesGained / 8200 * 3600);
-			let hours = Math.floor(durationSeconds / 3600);
-			let minutes = Math.floor((durationSeconds - (hours * 3600)) / 60);
-			let seconds = durationSeconds - hours * 3600 - minutes * 60;
-			if (hours   < 10) hours   = "0" + hours;
-			if (minutes < 10) minutes = "0" + minutes;
-			if (seconds < 10) seconds = "0" + seconds;
-			let duration = hours + ":" + minutes + ":" + seconds;
-			if (bestHero === "Wepwawet2") { bestHero = "Wepwawet"; }
-			timelapses.push({
-				duration,
-				bestHero,
-				heroLevel,
-				zone: highestZone,
-				zoneDisplay: highestZone.toLocaleString() + " (max zone)",
-			});
-		} else
-			startingZone = highestZone;
-	} while (zonesGained > 10);
+        let highestZone = findHighestActiveZone(this.logHeroSouls, heroDps);
+
+        zonesGained = highestZone - startingZone;
+        if (zonesGained <= 10) {
+            let activeZonesGained = startingZone - timelapseZoneMax;
+            let durationSeconds = Math.ceil(activeZonesGained / 8200 * 3600);
+            let hours = Math.floor(durationSeconds / 3600);
+            let minutes = Math.floor((durationSeconds - (hours * 3600)) / 60);
+            let seconds = durationSeconds - hours * 3600 - minutes * 60;
+            if (hours   < 10) { hours   = "0" + hours; }
+            if (minutes < 10) { minutes = "0" + minutes; }
+            if (seconds < 10) { seconds = "0" + seconds; }
+            let duration = hours + ":" + minutes + ":" + seconds;
+            if (bestHero === "Wepwawet2") { bestHero = "Wepwawet"; }
+            timelapses.push({
+                duration,
+                bestHero,
+                heroLevel,
+                zone: highestZone,
+                zoneDisplay: highestZone.toLocaleString() + " (max zone)",
+            });
+        } else {
+            startingZone = highestZone;
+        }
+    } while (zonesGained > 10);
 
     // Test log
     if (test) {
         return (JSON.stringify({
             logHeroSouls: baseHeroSouls,
-			xyliqilLevel: this.xyliqilLevel,
-			chorLevel: this.chorLevel,
+            xyliqilLevel: this.xyliqilLevel,
+            chorLevel: this.chorLevel,
             rubyCost,
             timelapses,
         }));
@@ -441,16 +437,6 @@ function refresh (test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 
     }
     $("#TimelapsesTable tbody").html(toappend);
     $("#RubyCost").html("Total Rubies: " + rubyCost);
-    /*let canQA = (timelapses.length > 0)
-                ? timelapses[timelapses.length - 1].zone < 1e7 // Change to 1e6 when patch e11 hits
-                : true;
-    if ((rubyCost > 50) && canQA) {
-        $("#Recommend").html("Recommended Action: Use Quick Ascension");
-    } else if (rubyCost > 0) {
-        $("#Recommend").html("Recommended Action: Use Timelapses as shown above");
-    } else {
-        $("#Recommend").html("Recommended Action: Save your rubies");
-    }*/
     $("#RubyCost").html("Total Rubies: " + rubyCost);
 }
 
@@ -460,14 +446,14 @@ function test() {
     for (let i = 0; i < cases.length; i++) {
         readout += "	" + refresh(true, cases[i]) + ",\n";
     }
-	for (let i = 1; i < 4; i++) {
-		for (let j = 1; j < 4; j++) {
-			readout += "	" + refresh(true, 5000, i * 10, j * 50) + ",\n";
-		}
+    for (let i = 1; i < 4; i++) {
+        for (let j = 1; j < 4; j++) {
+            readout += "	" + refresh(true, 5000, i * 10, j * 50) + ",\n";
+        }
     }
     readout = readout.slice(0, -2);
     readout += "\n]";
-	$("#savegame").val(readout);
+    $("#savegame").val(readout);
 }
 
 $("#hero_souls").keyup((ev) => {
