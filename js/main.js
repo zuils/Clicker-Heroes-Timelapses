@@ -223,7 +223,7 @@ for (let l = 0; l < 6; l++) {
         heroBaseDps[heroUpgrade] = heroDps + e11Upgrade * l + 1.861426728;
     }
 }
-heroCosts["Rose0"] += Math.log10(1.22) * 9825;
+heroCosts["Rose0"] += Math.log10(1.22) * 9700;
 
 function findBestHero(logGold) {
     let bestHero;
@@ -441,7 +441,7 @@ function refresh(test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 0
 }
 
 function test() {
-    let cases = [100, 250, 500, 750, 1000, 2000, 3000, 4000, 5000, 7500, 10000, 12500, 15000, 17500, 20000, 22500];
+    let cases = [100, 250, 500, 750, 1000, 2000, 3000, 4000, 5000, 7500, 10000, 12500, 15000, 17500, 20000, 25000, 30000, 40000, 50000, 75000, 100000];
     let readout = "[\n";
     for (let i = 0; i < cases.length; i++) {
         readout += "	" + refresh(true, cases[i]) + ",\n";
