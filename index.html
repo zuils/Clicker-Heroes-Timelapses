@@ -39,8 +39,23 @@
 								<p>Chor'gorloth:</p>
 								<input value="0" id="chor_level" type="text">
 							</div>
-							<input type="checkbox" id="TL168" class="checkbox" onclick="refresh()">Enable 168h TL
 							<br><button id="calculateButton" onclick="refresh()">Calculate</button>
+                            <hr>
+                            <button id="showAdvanced" onclick="showAdvancedClick()">Show Advanced Settings</button>
+                            <div id="advancedSettings">
+								<div class="numberInput">
+									<p>Min Zones:</p>
+									<input id="minZones" type="text" style="font-size:12px;">
+								</div>
+                                <div class="numberInput">
+									<p>QA Strategy:</p>
+									<select id="QAStrat" onChange="refresh();">
+                                        <option value="perRuby">Zones Per Ruby</option>
+                                        <option value="highest">Highest Zone</option>
+                                    </select>
+								</div>
+								<button id="defaultButton" onclick="defaultClick()">Set to Default</button>
+							</div>
 						</div>
 					</div>
 				</div>
