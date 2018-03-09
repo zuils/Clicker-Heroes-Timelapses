@@ -347,8 +347,10 @@ function refresh(test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 0
         this.xyliqilLevel = xyliqilLevel;
         this.chorLevel = chorLevel;
         this.minZones = 8200;
+        this.use168h = true;
     } else {
         [this.logHeroSouls, this.xyliqilLevel, this.chorLevel, this.minZones, this.QAStrat] = getInputs();
+        this.use168h = $("#TL168").is(":checked");
     }
     if (this.logHeroSouls < 0) { return false; }
 
@@ -376,7 +378,7 @@ function refresh(test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 0
         zonesGained = highestZone - startingZone;
         let duration;
         if (zonesGained < this.minZones) { break; }
-        if ((zonesGained > 360000) && (this.minZones <= 756000)) {
+        if (this.use168h && (zonesGained > 360000) && (this.minZones <= 756000)) {
             duration = "168h";
             zonesGained = Math.min(756000, zonesGained);
             rubyCost += 50;
