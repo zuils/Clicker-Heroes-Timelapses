@@ -1,3 +1,5 @@
+let print = false;
+
 function readSave() {
     let txt = $("#savegame").val();
     let data;
@@ -29,8 +31,14 @@ function readSave() {
         let outsiders = data.outsiders.outsiders;
         $("#xyliqil_level").val(outsiders[1].level);
         $("#chor_level").val(outsiders[2].level);
+        if (print) { $("#savegame").val(JSON.stringify(data,null,1)); }
         refresh();
     } else if (txt) {
         $("#savegame").val("");
     }
+}
+
+function printSave(input=true) {
+    print = Boolean(input);
+    return print;
 }

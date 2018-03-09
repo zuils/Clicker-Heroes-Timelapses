@@ -1,8 +1,27 @@
 // Polyfill for Internet Explorer
 Math.log10 = (x) => Math.log(x) / Math.LN10;
 
+var settingsVisible = false;
+
+function showAdvancedClick() {
+    $("#advancedSettings").toggle(100, function(){
+        $("#showAdvanced").html( (settingsVisible = !settingsVisible) ? "Hide Advanced Settings" : "Show Advanced Settings");
+    });
+}
+
+function setDefaults() {
+    $("#minZones").val(8200);
+    $("#QAStrat").val("perRuby");
+}
+
+
+function defaultClick() {
+    setDefaults();
+    refresh();
+}
+
 function getInputs() {
-    let heroSoulsInput = $("#hero_souls").val()
+    let heroSoulsInput = $("#hero_souls").val();
     let logHeroSouls;
     if (heroSoulsInput.includes("e")) {
         let mantissa = heroSoulsInput.substr(0, heroSoulsInput.indexOf("e"));
@@ -37,7 +56,12 @@ function getInputs() {
     if (chorLevel > 150) { chorLevel = 150; }
     $("#chor_level").val(chorLevel);
 
-    return [logHeroSouls, xyliqilLevel, chorLevel];
+    let minZones = parseInt($("#minZones").val() || 0);
+    if (!(minZones >= 1)) { minZones = 1; }
+    $("#minZones").val(minZones);
+
+    let QAStrat = $("#QAStrat").val();
+    return [logHeroSouls, xyliqilLevel, chorLevel, minZones, QAStrat];
 }
 
 let e11Levels = {
@@ -60,13 +84,13 @@ let e11Levels = {
     Dorothy2: 1429750,
     Dorothy3: 1956500,
     Dorothy4: 2633750,
-    Dorothy5: 3235750,
+    Dorothy5: 3235750
 };
 let e11Dps = {
     Rose: Math.log10(8.586) + 148592,
     Sophia: Math.log10(6.326) + 158831,
     Blanche: Math.log10(4.661) + 178104,
-    Dorothy: Math.log10(3.434) + 199738,
+    Dorothy: Math.log10(3.434) + 199738
 };
 let e11Upgrade = 5798;
 let e11CostScale = Math.log10(1.22);
@@ -123,7 +147,7 @@ let heroCosts = {
     Yachiyl3: 86398.0511 - dogcog,
     Yachiyl4: 91540.2122 - dogcog,
     Yachiyl5: 96858.6759 - dogcog,
-    Yachiyl6: 102338.7505 - dogcog,
+    Yachiyl6: 102338.7505 - dogcog
 };
 let heroCosts1 = {
     Samurai: 5 - dogcog,
@@ -155,7 +179,7 @@ let heroCosts1 = {
     Rose: 108000 - dogcog,
     Sophia: 114500 - dogcog,
     Blanche: 127500 - dogcog,
-    Dorothy: 142200 - dogcog,
+    Dorothy: 142200 - dogcog
 };
 let heroBaseDps = {
     Samurai: 5.2858,
@@ -207,7 +231,7 @@ let heroBaseDps = {
     Yachiyl3: 107387.9278,
     Yachiyl4: 110485.9278,
     Yachiyl5: 113683.9278,
-    Yachiyl6: 116981.9278,
+    Yachiyl6: 116981.9278
 };
 
 // Populate e11 heroes
@@ -322,21 +346,23 @@ function refresh(test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 0
         this.logHeroSouls = logHeroSouls;
         this.xyliqilLevel = xyliqilLevel;
         this.chorLevel = chorLevel;
+        this.minZones = 8200;
+        this.use168h = true;
     } else {
-        [this.logHeroSouls, this.xyliqilLevel, this.chorLevel] = getInputs();
+        [this.logHeroSouls, this.xyliqilLevel, this.chorLevel, this.minZones, this.QAStrat] = getInputs();
+        this.use168h = $("#TL168").is(":checked");
     }
     if (this.logHeroSouls < 0) { return false; }
 
-    this.use168h = $("#TL168").is(":checked");
-    let gilds = Math.max(1, Math.floor((this.logHeroSouls - 5) / Math.log10(1.25) / 2) - 9);
+    let previousHZT = (this.logHeroSouls - 5) / Math.log10(1.25) * 5;
+    let gilds = Math.max(1, Math.floor(previousHZT / 10) - 9);
     let baseHeroSouls = this.logHeroSouls;
     this.logHeroSouls += Math.log10(1 / 0.95) * this.chorLevel - 2;
 
-    let	startingZone = 0;
-    let	timelapses = [];
+    let startingZone = 0;
+    let timelapses = [];
     let zonesGained;
     let rubyCost = 0;
-    let minimumZoneGain = 8200;
 
     do {
         let logGold = getMonsterGold(startingZone, this.logHeroSouls)
@@ -351,24 +377,24 @@ function refresh(test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 0
 
         zonesGained = highestZone - startingZone;
         let duration;
-        if (zonesGained < minimumZoneGain) { break; }
-        if (this.use168h && zonesGained > 360000) {
+        if (zonesGained < this.minZones) { break; }
+        if (this.use168h && (zonesGained > 360000) && (this.minZones <= 756000)) {
             duration = "168h";
             zonesGained = Math.min(756000, zonesGained);
             rubyCost += 50;
-        } else if (zonesGained > 144000) {
+        } else if ((zonesGained > 144000) && (this.minZones <= 216000)) {
             duration = "48h";
             zonesGained = Math.min(216000, zonesGained);
             rubyCost += 30;
-        } else if (zonesGained > 72000) {
+        } else if ((zonesGained > 72000) && (this.minZones <= 108000)) {
             duration = "24h";
             zonesGained = Math.min(108000, zonesGained);
             rubyCost += 20;
-        } else {
+        } else if (this.minZones <= 36000) {
             duration = "8h";
             zonesGained = Math.min(36000, zonesGained);
             rubyCost += 10;
-        }
+        } else { break; }
         highestZone = startingZone + zonesGained;
 
         if (bestHero === "Wepwawet2") { bestHero = "Wepwawet"; }
@@ -382,7 +408,7 @@ function refresh(test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 0
         });
 
         startingZone = highestZone;
-    } while (zonesGained >= minimumZoneGain);
+    } while (zonesGained >= this.minZones);
 
     let timelapseZoneMax = startingZone;
 
@@ -438,17 +464,44 @@ function refresh(test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 0
     $("#TimelapsesTable tbody").html(toappend);
     $("#RubyCost").html("Total Rubies: " + rubyCost);
     $("#RubyCost").html("Total Rubies: " + rubyCost);
+
+    // Recommended action
+    let action;
+    let numTLs = timelapses.length - 1;
+    if(numTLs === 0) {
+        action = "Save your rubies.";
+    } else if(previousHZT > 1e6) {
+        action = "Use Timelapses as shown above.";
+    } else if(this.QAStrat === "perRuby"){
+        let rubyCostTL = rubyCost - numTLs * 2; //consider mercenaries (estimated 2 rubies per TL)
+        let maxZoneTL = timelapses[numTLs - 1].zone;
+        let zonesPerRubyTL = maxZoneTL / rubyCost;
+        let zonesPerRubyQA = previousHZT / 50;
+        if(zonesPerRubyTL > zonesPerRubyQA) {
+            action = "Use Timelapses as shown above.";
+        } else {
+            action = "Use Quick Ascension.";
+        }
+    } else {
+        let maxZoneTL = timelapses[numTLs - 1].zone;
+        if(maxZoneTL > previousHZT) {
+            action = "Use Timelapses as shown above.";
+        } else {
+            action = "Use Quick Ascension.";
+        }
+    }
+    $("#Recommend").html("Recommended: " + action);
 }
 
 function test() {
     let cases = [100, 250, 500, 750, 1000, 2000, 3000, 4000, 5000, 7500, 10000, 12500, 15000, 17500, 20000, 25000, 30000, 40000, 50000, 75000, 100000];
     let readout = "[\n";
     for (let i = 0; i < cases.length; i++) {
-        readout += "	" + refresh(true, cases[i]) + ",\n";
+        readout += "    " + refresh(true, cases[i]) + ",\n";
     }
     for (let i = 1; i < 4; i++) {
         for (let j = 1; j < 4; j++) {
-            readout += "	" + refresh(true, 5000, i * 10, j * 50) + ",\n";
+            readout += "    " + refresh(true, 5000, i * 10, j * 50) + ",\n";
         }
     }
     readout = readout.slice(0, -2);
@@ -459,3 +512,17 @@ function test() {
 $("#hero_souls").keyup((ev) => {
     if (ev.which === 13) { refresh(); }
 });
+
+$("#xyliqil_level").keyup((ev) => {
+    if (ev.which === 13) { refresh(); }
+});
+
+$("#chor_level").keyup((ev) => {
+    if (ev.which === 13) { refresh(); }
+});
+
+$("#minZones").keyup((ev) => {
+    if (ev.which === 13) { refresh(); }
+});
+
+$(setDefaults)
