@@ -525,4 +525,11 @@ $("#minZones").keyup((ev) => {
     if (ev.which === 13) { refresh(); }
 });
 
+function changeTheme() {
+    $("#theme").attr("href", $("#dark").is(":checked")
+        ? "css/dark-theme-v001.css"
+        : "css/light-theme-v001.css"
+    );
+}
+
 $(setDefaults)

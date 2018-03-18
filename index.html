@@ -6,7 +6,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>CH Timelapse Calculator</title>
 	<link rel="stylesheet" href="css/normalize.css">
-	<link rel="stylesheet" href="css/main-v001.css">
+	<link rel="stylesheet" href="css/main-v002.css">
+    <link id="theme" rel="stylesheet" href="css/light-theme-v001.css">
 	<link rel="icon" type="image/png" href="Chronos.png">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
@@ -40,6 +41,7 @@
 								<input value="0" id="chor_level" type="text">
 							</div>
                             <input type="checkbox" id="TL168" class="checkbox" checked onclick="refresh()">Enable 168h TL
+                            <br><input type="checkbox" id="dark" class="checkbox" onclick="changeTheme()">Dark Theme
 							<br><button id="calculateButton" onclick="refresh()">Calculate</button>
                             <hr>
                             <button id="showAdvanced" onclick="showAdvancedClick()">Show Advanced Settings</button>
