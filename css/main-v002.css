@@ -62,7 +62,7 @@
 input {
 	border: none;
 	padding: 5px;
-	width: 48px;
+	width: 92px;
 	text-align: center;
 	font-size: 14px;
 }
@@ -105,7 +105,7 @@ input {
 .numberInput > p {
 	display: inline-block;
 	margin: 0;
-	width: 100px;
+	width: 104px;
 }
 
 .numberInput > input {
