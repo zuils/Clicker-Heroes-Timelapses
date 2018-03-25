@@ -285,17 +285,17 @@ function findHeroDps(bestHero, heroLevel, heroType, gilds) {
 let cacheHp140 = Math.log10(1.55) * 139 + 1;
 let hp141 = 1 + Math.log10(1.145) + cacheHp140;
 let hp500 = 1 + Math.log10(1.55) * 139 + Math.log10(1.145) * 360;
-let hp200k1 = Math.log10(1.24) + 25409;
+let hp200k = Math.log10(1.24) + 25409;
 
 function findHighestZone(totalDps) {
     if (totalDps < hp141) {
         return 130;
     } else if (totalDps <= hp500) {
         return 500;
-    } else if (totalDps < hp200k1) {
+    } else if (totalDps < hp200k) {
         let logHealth = hp500;
-        this.zone = 200001;
-        for (let z = 501; z < 200001; z++) {
+        this.zone = 199999;
+        for (let z = 501; z < 200000; z++) {
             logHealth += Math.log10(1.145 + 0.001 * Math.floor((z - 1) / 500));
             if (logHealth >= totalDps) {
                 this.zone = z;
@@ -303,7 +303,7 @@ function findHighestZone(totalDps) {
             }
         }
     } else {
-        this.zone = (totalDps - hp200k1) / Math.log10(1.545) + 200001;
+        this.zone = (totalDps - hp200k) / Math.log10(1.545) + 200000;
     }
     return Math.floor(this.zone);
 }
