@@ -10,7 +10,7 @@ function showAdvancedClick() {
 }
 
 function setDefaults() {
-    $("#minZones").val(8200);
+    $("#minZones").val(8000);
     $("#QAStrat").val("perRuby");
 }
 
@@ -346,7 +346,7 @@ function refresh(test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 0
         this.logHeroSouls = logHeroSouls;
         this.xyliqilLevel = xyliqilLevel;
         this.chorLevel = chorLevel;
-        this.minZones = 8200;
+        this.minZones = 8000;
         this.use168h = true;
     } else {
         [this.logHeroSouls, this.xyliqilLevel, this.chorLevel, this.minZones, this.QAStrat] = getInputs();
@@ -423,7 +423,7 @@ function refresh(test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 0
         zonesGained = highestZone - startingZone;
         if (zonesGained <= 10) {
             let activeZonesGained = startingZone - timelapseZoneMax;
-            let durationSeconds = Math.ceil(activeZonesGained / 8200 * 3600);
+            let durationSeconds = Math.ceil(activeZonesGained / 8000 * 3600);
             let hours = Math.floor(durationSeconds / 3600);
             let minutes = Math.floor((durationSeconds - (hours * 3600)) / 60);
             let seconds = durationSeconds - hours * 3600 - minutes * 60;
