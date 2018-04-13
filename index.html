@@ -6,8 +6,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>CH Timelapse Calculator</title>
 	<link rel="stylesheet" href="css/normalize.css">
-	<link rel="stylesheet" href="css/main-v002.css">
-    <link id="theme" rel="stylesheet" href="css/light-theme-v001.css">
+	<link rel="stylesheet" href="css/main-v003.css">
+    <link id="theme" rel="stylesheet" href="css/light-theme-v002.css">
 	<link rel="icon" type="image/png" href="Chronos.png">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
@@ -15,7 +15,7 @@
 		<div class="container">
 			<div class="boxes">
 				<div class="box-12">
-					<div>
+					<div class="panel">
 						<div class="title">Info</div>
 						<div class="content">
 							<p>Send your Feedback to: <a href="https://redd.it/7z4982">https://redd.it/7z4982</a></p>
@@ -24,8 +24,13 @@
 						</div>
 					</div>
 				</div>
+                <div class="box-12 warning">
+                    <div id="ancientCheckResults">
+                        
+                    </div>
+                </div>
 				<div class="box-4">
-					<div>
+					<div class="panel">
 						<div class="title">Inputs</div>
 						<div class="content">
 							<div class="numberInput">
@@ -39,6 +44,10 @@
 							<div class="numberInput">
 								<p>Chor'gorloth:</p>
 								<input value="0" id="chor_level" type="text">
+							</div>
+                            <div class="numberInput">
+								<p>Auto Clickers:</p>
+								<input value="0" id="autoclickers" type="text">
 							</div>
                             <input type="checkbox" id="TL168" class="checkbox" checked onclick="refresh()">Enable 168h TL
                             <br><input type="checkbox" id="dark" class="checkbox" onclick="changeTheme()">Dark Theme
@@ -63,7 +72,7 @@
 					</div>
 				</div>
 				<div class="box-8">
-					<div>
+					<div class="panel">
 						<div class="title">Results</div>
 						<div class="content">
 							<table id="TimelapsesTable" cellspacing="0">
@@ -86,7 +95,7 @@
 			</div>
 			<div class="boxes">
 				<div class="box-4">
-					<div>
+					<div class="panel">
 						<div class="title">Read Save</div>
 						<div class="content">
 							<textarea id="savegame" placeholder="Paste your save game here" autofocus onclick="this.focus();this.select()"></textarea>
@@ -98,6 +107,7 @@
 		</div>
 		<script src="js/pako-bundle.min.js"></script>
 		<script src="js/readSave.js"></script>
+        <script src="js/checkAncients.js"></script>
 		<script src="js/main.js"></script>
 	</body>
 </html>

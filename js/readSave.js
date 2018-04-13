@@ -26,13 +26,16 @@ function readSave() {
         if (logHeroSoulsOnAscend > logHeroSoulsCurrent) {
             $("#hero_souls").val(primalSouls);
         } else {
+
             $("#hero_souls").val(heroSoulsEnd);
         }
         let outsiders = data.outsiders.outsiders;
         $("#xyliqil_level").val(outsiders[1].level);
         $("#chor_level").val(outsiders[2].level);
+        $("#autoclickers").val(data.autoclickers);
         if (print) { $("#savegame").val(JSON.stringify(data,null,1)); }
         refresh();
+        checkAncients(data, heroSoulsEnd, outsiders[2].level);
     } else if (txt) {
         $("#savegame").val("");
     }

@@ -56,12 +56,17 @@ function getInputs() {
     if (chorLevel > 150) { chorLevel = 150; }
     $("#chor_level").val(chorLevel);
 
+    let autoClickers = parseInt($("#autoclickers").val() || 0);
+    if (!(autoClickers >= 0)) { autoClickers = 0; }
+    $("#autoclickers").val(autoClickers);
+    
+
     let minZones = parseInt($("#minZones").val() || 0);
     if (!(minZones >= 1)) { minZones = 1; }
     $("#minZones").val(minZones);
 
     let QAStrat = $("#QAStrat").val();
-    return [logHeroSouls, xyliqilLevel, chorLevel, minZones, QAStrat];
+    return [logHeroSouls, xyliqilLevel, chorLevel, autoClickers, minZones, QAStrat];
 }
 
 let e11Levels = {
@@ -308,9 +313,9 @@ function findHighestZone(totalDps) {
     return Math.floor(this.zone);
 }
 
-function findHighestIdleZone(logHeroSouls, heroDps, xyliqilLevel) {
+function findHighestIdleZone(logHeroSouls, heroDps, xyliqilLevel, autoClickers) {
     let ancientDps = logHeroSouls * 2.4 + Math.log10(1.5) * 2 * xyliqilLevel;
-    let totalDps = heroDps + ancientDps;
+    let totalDps = heroDps + ancientDps + Math.log10(autoClickers + 1);
     return findHighestZone(totalDps);
 }
 
@@ -340,7 +345,8 @@ function getHeroLevel(logGold, bestHero, heroType) {
     return heroLevel;
 }
 
-function refresh(test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 0) {
+function refresh(test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 0, autoClickers = 0) {
+    $("#ancientCheckResults").parent().hide();
     // Inputs
     if (test) {
         this.logHeroSouls = logHeroSouls;
@@ -349,31 +355,36 @@ function refresh(test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 0
         this.minZones = 8000;
         this.use168h = true;
     } else {
-        [this.logHeroSouls, this.xyliqilLevel, this.chorLevel, this.minZones, this.QAStrat] = getInputs();
+        [this.logHeroSouls, this.xyliqilLevel, this.chorLevel, this.autoClickers, this.minZones, this.QAStrat] = getInputs();
         this.use168h = $("#TL168").is(":checked");
     }
     if (this.logHeroSouls < 0) { return false; }
+    
+    let logCps = Math.max(1 + Math.log10(this.autoClickers), 1 + (this.autoClickers - 1) * Math.log10(1.5));
+    let logXylBonus = Math.log10(1.5) * this.xyliqilLevel;
 
     let previousHZT = (this.logHeroSouls - 5) / Math.log10(1.25) * 5;
     let gilds = Math.max(1, Math.floor(previousHZT / 10) - 9);
     let baseHeroSouls = this.logHeroSouls;
     this.logHeroSouls += Math.log10(1 / 0.95) * this.chorLevel - 2;
 
-    let startingZone = 0;
+    let startingZone = 40;
     let timelapses = [];
     let zonesGained;
     let rubyCost = 0;
 
     do {
         let logGold = getMonsterGold(startingZone, this.logHeroSouls)
-        if (startingZone > 0) {
-            logGold += Math.log10(1 / (1 - 1 / 1.15));
-            logGold += Math.log10(1.5) * this.xyliqilLevel;
-        }
+        let idleGoldExtra = startingZone > 140
+            ? Math.log10(1.15 / 0.15)
+            : Math.log10(1.6 / 0.6);
+        idleGoldExtra += logXylBonus;
+        let activeGoldExtra = logCps + 1;
+        logGold += Math.max(idleGoldExtra, activeGoldExtra);
         let [bestHero, heroType] = findBestHero(logGold);
         let heroLevel = getHeroLevel(logGold, bestHero, heroType);
         let heroDps = findHeroDps(bestHero, heroLevel, heroType, gilds);
-        let highestZone = findHighestIdleZone(this.logHeroSouls, heroDps, this.xyliqilLevel);
+        let highestZone = findHighestIdleZone(this.logHeroSouls, heroDps, this.xyliqilLevel, this.autoClickers);
 
         zonesGained = highestZone - startingZone;
         let duration;
@@ -414,11 +425,13 @@ function refresh(test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 0
 
     do {
         let logGold = getMonsterGold(startingZone, this.logHeroSouls);
-        logGold += Math.log10(1 / (1 - 1 / 1.15));
+        logGold += Math.log10(1.15 / 0.15);
+        logGold += logCps;
         let [bestHero, heroType] = findBestHero(logGold);
         let heroLevel = getHeroLevel(logGold, bestHero, heroType);
         let heroDps = findHeroDps(bestHero, heroLevel, heroType, gilds);
-        let highestZone = findHighestActiveZone(this.logHeroSouls, heroDps);
+        let combo = Math.log10(Math.max((startingZone - timelapseZoneMax) / 2.25, 1)) + logCps;
+        let highestZone = findHighestActiveZone(this.logHeroSouls, heroDps + combo + logCps);
 
         zonesGained = highestZone - startingZone;
         if (zonesGained <= 10) {
@@ -521,16 +534,22 @@ $("#chor_level").keyup((ev) => {
     if (ev.which === 13) { refresh(); }
 });
 
+$("#autoclickers").keyup((ev) => {
+    if (ev.which === 13) { refresh(); }
+});
+
 $("#minZones").keyup((ev) => {
     if (ev.which === 13) { refresh(); }
 });
 
 function changeTheme() {
     $("#theme").attr("href", $("#dark").is(":checked")
-        ? "css/dark-theme-v001.css"
-        : "css/light-theme-v001.css"
+        ? "css/dark-theme-v002.css"
+        : "css/light-theme-v002.css"
     );
+    localStorage.setItem("darkmode", $("#dark").is(":checked"));
 }
 
 $(setDefaults);
+$("#dark").prop("checked", localStorage.getItem("darkmode")==="true");
 $(changeTheme);
