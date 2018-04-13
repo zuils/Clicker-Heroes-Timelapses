@@ -345,13 +345,14 @@ function getHeroLevel(logGold, bestHero, heroType) {
     return heroLevel;
 }
 
-function refresh(test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 0, autoClickers = 0) {
+function refresh(test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 0, autoClickers = 5) {
     $("#ancientCheckResults").parent().hide();
     // Inputs
     if (test) {
         this.logHeroSouls = logHeroSouls;
         this.xyliqilLevel = xyliqilLevel;
         this.chorLevel = chorLevel;
+        this.autoClickers = autoClickers;
         this.minZones = 8000;
         this.use168h = true;
     } else {
