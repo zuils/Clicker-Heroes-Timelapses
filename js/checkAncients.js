@@ -45,11 +45,11 @@ function checkList(missing, underleveled, ancients, list, treshold) {
 
 function checkAncients(data) {
     let chor = data.outsiders.outsiders[2].level;
-    let heroSoulsEnd = data.stats.currentAscension.heroSoulsEnd;
-    let lastE = heroSoulsEnd.lastIndexOf("e");
+    let heroSoulsTotal = data.totalHeroSoulsFromAscensions;
+    let lastE = heroSoulsTotal.lastIndexOf("e");
     let heroSouls = lastE > 0
-        ? parseFloat(heroSoulsEnd.substr(lastE + 1)) + Math.log10(heroSoulsEnd.substr(0, lastE))
-        : Math.log10(heroSoulsEnd);
+        ? parseFloat(heroSoulsTotal.substr(lastE + 1)) + Math.log10(heroSoulsTotal.substr(0, lastE))
+        : Math.log10(heroSoulsTotal);
     heroSouls += Math.log10(1 / 0.95) * chor;
     let ancients = data.ancients.ancients;
     let missing = [];
