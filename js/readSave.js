@@ -35,7 +35,7 @@ function readSave() {
         $("#autoclickers").val(data.autoclickers);
         if (print) { $("#savegame").val(JSON.stringify(data,null,1)); }
         refresh();
-        checkAncients(data, heroSoulsEnd, outsiders[2].level);
+        checkAncients(data);
     } else if (txt) {
         $("#savegame").val("");
     }
