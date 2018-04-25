@@ -55,11 +55,11 @@ function checkAncients(data) {
     let missing = [];
     let underleveled = [];
     //check argaiv, bhaal, fragsworth, libertas, mammon, mimzee, pluto and siyalatas
-    checkList(missing, underleveled, ancients, [28, 15, 19, 4, 8, 9, 10, 5], (heroSouls - 4) / 2);
+    checkList(missing, underleveled, ancients, [28, 15, 19, 4, 8, 9, 10, 5], (heroSouls - 5) / 2);
     //check juggernaut and nogardnit
-    checkList(missing, underleveled, ancients, [29, 32], (heroSouls - 4) / 2.5);
+    checkList(missing, underleveled, ancients, [29, 32], (heroSouls - 5) / 2.5);
     //check morgulis
-    checkList(missing, underleveled, ancients, [16], heroSouls - 4);
+    checkList(missing, underleveled, ancients, [16], heroSouls - 5);
     let results = "";
     if(missing.length > 0) {
         results += "<b>Missing:</b> ";
