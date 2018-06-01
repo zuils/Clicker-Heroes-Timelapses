@@ -100,7 +100,7 @@ let e11Dps = {
     Dorothy: Math.log10(3.434) + 199738
 };
 let e11Upgrade = 5798;
-let e11CostScale = Math.log10(1.22);
+let e11CostScale = Math.log10(1.07);
 let e11DpsScale = Math.log10(1000);
 let costThousand = Math.log10(1.07) * 1000;
 let dogcog = 10;
@@ -244,7 +244,7 @@ let heroBaseDps = {
 // Populate e11 heroes
 let newHeroes = ["Rose"];
 for (let l = 0; l < 6; l++) {
-    for (let q = 0; q < 4; q++) {
+    for (let q = 0; q < 1; q++) {
         let hero = newHeroes[q];
         let heroCost = heroCosts1[hero];
         let heroDps = e11Dps[hero];
@@ -254,7 +254,7 @@ for (let l = 0; l < 6; l++) {
         heroBaseDps[heroUpgrade] = heroDps + e11Upgrade * l + 1.861426728;
     }
 }
-heroCosts["Rose0"] += Math.log10(1.22) * 200;
+heroCosts["Rose0"] += Math.log10(1.07) * 4500;
 
 function findBestHero(logGold) {
     let bestHero;
@@ -438,21 +438,33 @@ function refresh(test, logHeroSouls, xyliqilLevel, chorLevel, autoClickers) {
     } while (zonesGained >= this.minZones && startingZone < 2147483648);
 
     let timelapseZoneMax = startingZone;
-
+    let highestZone = startingZone;
+    let bestHero = "";
+    let heroType = "e10";
+    let heroLevel = 1;
+    let heroDps = 0;
+    let combo = 0;
+    let moreTLs = false;
+    
     do {
         let logGold = getMonsterGold(startingZone, this.logHeroSouls);
         logGold += Math.log10(1.15 / 0.15);
         logGold += logCps;
         let IEsucks = findBestHero(logGold);
-        let bestHero = IEsucks[0];
-        let heroType = IEsucks[1];
-        let heroLevel = getHeroLevel(logGold, bestHero, heroType);
-        let heroDps = findHeroDps(bestHero, heroLevel, heroType, gilds);
-        let combo = Math.log10(Math.max((startingZone - timelapseZoneMax) / 2.25, 1)) + logCps;
-        let highestZone = findHighestActiveZone(this.logHeroSouls, heroDps + combo + logCps);
+        if (highestZone > 1460000) {
+            moreTLs = true;
+            break;
+        } else {
+            bestHero = IEsucks[0];
+            heroType = IEsucks[1];
+            heroLevel = getHeroLevel(logGold, bestHero, heroType);
+            heroDps = findHeroDps(bestHero, heroLevel, heroType, gilds);
+            combo = Math.log10(Math.max((startingZone - timelapseZoneMax) / 2.25, 1)) + logCps;
+            highestZone = findHighestActiveZone(this.logHeroSouls, heroDps + combo + logCps);
 
-        zonesGained = highestZone - startingZone;
-        if (zonesGained <= 10) {
+            zonesGained = highestZone - startingZone;
+        }
+        if (zonesGained <= 10 || highestZone > 1460000) {
             let activeZonesGained = startingZone - timelapseZoneMax;
             let durationSeconds = Math.ceil(activeZonesGained / 8000 * 3600);
             let hours = Math.floor(durationSeconds / 3600);
@@ -473,8 +485,60 @@ function refresh(test, logHeroSouls, xyliqilLevel, chorLevel, autoClickers) {
         } else {
             startingZone = highestZone;
         }
-    } while (zonesGained > 10);
+    } while (zonesGained > 10 && !moreTLs);
 
+    if (moreTLs) {
+        do {
+            let logGold = getMonsterGold(startingZone, this.logHeroSouls)
+            let idleGoldExtra = startingZone > 140
+                ? Math.log10(1.15 / 0.15)
+                : Math.log10(1.6 / 0.6);
+            idleGoldExtra += logXylBonus;
+            let activeGoldExtra = logCps + 1;
+            logGold += Math.max(idleGoldExtra, activeGoldExtra);
+            let IEsucks = findBestHero(logGold);
+            let bestHero = IEsucks[0];
+            let heroType = IEsucks[1];
+            let heroLevel = getHeroLevel(logGold, bestHero, heroType);
+            let heroDps = findHeroDps(bestHero, heroLevel, heroType, gilds);
+            let highestZone = findHighestIdleZone(this.logHeroSouls, heroDps, this.xyliqilLevel, this.autoClickers);
+
+            zonesGained = highestZone - startingZone;
+            let duration;
+            if (zonesGained < this.minZones) { break; }
+            if ((zonesGained > 360000) && (this.minZones <= 756000)) {
+                duration = "168h";
+                zonesGained = Math.min(756000, zonesGained);
+                rubyCost += 50;
+            } else if ((zonesGained > 144000) && (this.minZones <= 216000)) {
+                duration = "48h";
+                zonesGained = Math.min(216000, zonesGained);
+                rubyCost += 30;
+            } else if ((zonesGained > 72000) && (this.minZones <= 108000)) {
+                duration = "24h";
+                zonesGained = Math.min(108000, zonesGained);
+                rubyCost += 20;
+            } else if (this.minZones <= 36000) {
+                duration = "8h";
+                zonesGained = Math.min(36000, zonesGained);
+                rubyCost += 10;
+            } else { break; }
+            highestZone = startingZone + zonesGained;
+
+            if (bestHero === "Wepwawet2") { bestHero = "Wepwawet"; }
+
+            timelapses.push({
+                duration: duration,
+                bestHero: bestHero,
+                heroLevel: heroLevel,
+                zone: highestZone,
+                zoneDisplay: highestZone.toLocaleString() + " (+" + zonesGained.toLocaleString() + ")",
+            });
+
+            startingZone = highestZone;
+        } while (zonesGained >= this.minZones && startingZone < 2147483648);
+    }
+    
     // Test log
     if (test) {
         return (JSON.stringify({
