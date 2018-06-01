@@ -1,5 +1,7 @@
 // Polyfill for Internet Explorer
-Math.log10 = (x) => Math.log(x) / Math.LN10;
+Math.log10 = function(x) {
+    return Math.log(x) / Math.LN10;
+}
 
 var settingsVisible = false;
 
@@ -23,7 +25,7 @@ function defaultClick() {
 function getInputs() {
     let heroSoulsInput = $("#hero_souls").val();
     let logHeroSouls;
-    if (heroSoulsInput.includes("e")) {
+    if (heroSoulsInput.indexOf("e") > -1) {
         let mantissa = heroSoulsInput.substr(0, heroSoulsInput.indexOf("e"));
         let exponent = heroSoulsInput.substr(heroSoulsInput.lastIndexOf("e") + 1);
         mantissa = parseFloat(mantissa || 0);
@@ -345,7 +347,13 @@ function getHeroLevel(logGold, bestHero, heroType) {
     return heroLevel;
 }
 
-function refresh(test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 0, autoClickers = 5) {
+function refresh(test, logHeroSouls, xyliqilLevel, chorLevel, autoClickers) {
+    //IE sucks
+    if (test === undefined || test === null) test = false;
+    if (logHeroSouls === undefined || logHeroSouls === null) logHeroSouls = 0;
+    if (xyliqilLevel === undefined || xyliqilLevel === null) xyliqilLevel = 0;
+    if (chorLevel === undefined || chorLevel === null) chorLevel = 0;
+    if (autoClickers === undefined || autoClickers === null) autoClickers = 5;
     $("#ancientCheckResults").parent().hide();
     // Inputs
     if (test) {
@@ -356,7 +364,13 @@ function refresh(test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 0
         this.minZones = 8000;
         this.use168h = true;
     } else {
-        [this.logHeroSouls, this.xyliqilLevel, this.chorLevel, this.autoClickers, this.minZones, this.QAStrat] = getInputs();
+        let IEsucks = getInputs();
+        this.logHeroSouls = IEsucks[0];
+        this.xyliqilLevel = IEsucks[1];
+        this.chorLevel = IEsucks[2];
+        this.autoClickers = IEsucks[3];
+        this.minZones = IEsucks[4];
+        this.QAStrat = IEsucks[5];
         this.use168h = $("#TL168").is(":checked");
     }
     if (this.logHeroSouls < 0) { return false; }
@@ -382,7 +396,9 @@ function refresh(test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 0
         idleGoldExtra += logXylBonus;
         let activeGoldExtra = logCps + 1;
         logGold += Math.max(idleGoldExtra, activeGoldExtra);
-        let [bestHero, heroType] = findBestHero(logGold);
+        let IEsucks = findBestHero(logGold);
+        let bestHero = IEsucks[0];
+        let heroType = IEsucks[1];
         let heroLevel = getHeroLevel(logGold, bestHero, heroType);
         let heroDps = findHeroDps(bestHero, heroLevel, heroType, gilds);
         let highestZone = findHighestIdleZone(this.logHeroSouls, heroDps, this.xyliqilLevel, this.autoClickers);
@@ -412,9 +428,9 @@ function refresh(test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 0
         if (bestHero === "Wepwawet2") { bestHero = "Wepwawet"; }
 
         timelapses.push({
-            duration,
-            bestHero,
-            heroLevel,
+            duration: duration,
+            bestHero: bestHero,
+            heroLevel: heroLevel,
             zone: highestZone,
             zoneDisplay: highestZone.toLocaleString() + " (+" + zonesGained.toLocaleString() + ")",
         });
@@ -428,7 +444,9 @@ function refresh(test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 0
         let logGold = getMonsterGold(startingZone, this.logHeroSouls);
         logGold += Math.log10(1.15 / 0.15);
         logGold += logCps;
-        let [bestHero, heroType] = findBestHero(logGold);
+        let IEsucks = findBestHero(logGold);
+        let bestHero = IEsucks[0];
+        let heroType = IEsucks[1];
         let heroLevel = getHeroLevel(logGold, bestHero, heroType);
         let heroDps = findHeroDps(bestHero, heroLevel, heroType, gilds);
         let combo = Math.log10(Math.max((startingZone - timelapseZoneMax) / 2.25, 1)) + logCps;
@@ -447,9 +465,9 @@ function refresh(test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 0
             let duration = hours + ":" + minutes + ":" + seconds;
             if (bestHero === "Wepwawet2") { bestHero = "Wepwawet"; }
             timelapses.push({
-                duration,
-                bestHero,
-                heroLevel,
+                duration: duration,
+                bestHero: bestHero,
+                heroLevel: heroLevel,
                 zone: highestZone,
                 zoneDisplay: highestZone.toLocaleString() + " (max zone)",
             });
@@ -464,8 +482,8 @@ function refresh(test = false, logHeroSouls = 0, xyliqilLevel = 0, chorLevel = 0
             logHeroSouls: baseHeroSouls,
             xyliqilLevel: this.xyliqilLevel,
             chorLevel: this.chorLevel,
-            rubyCost,
-            timelapses,
+            rubyCost: rubyCost,
+            timelapses: timelapses,
         }));
     }
 
@@ -523,34 +541,33 @@ function test() {
     $("#savegame").val(readout);
 }
 
-$("#hero_souls").keyup((ev) => {
-    if (ev.which === 13) { refresh(); }
-});
+function enterKey(ev) {
+    if (ev.which === 13) refresh();
+}
 
-$("#xyliqil_level").keyup((ev) => {
-    if (ev.which === 13) { refresh(); }
-});
+$("#hero_souls").keyup(enterKey);
 
-$("#chor_level").keyup((ev) => {
-    if (ev.which === 13) { refresh(); }
-});
+$("#xyliqil_level").keyup(enterKey);
 
-$("#autoclickers").keyup((ev) => {
-    if (ev.which === 13) { refresh(); }
-});
+$("#chor_level").keyup(enterKey);
 
-$("#minZones").keyup((ev) => {
-    if (ev.which === 13) { refresh(); }
-});
+$("#autoclickers").keyup(enterKey);
+
+$("#minZones").keyup(enterKey);
 
 function changeTheme() {
-    $("#theme").attr("href", $("#dark").is(":checked")
-        ? "css/dark-theme-v002.css"
-        : "css/light-theme-v002.css"
-    );
-    localStorage.setItem("darkmode", $("#dark").is(":checked"));
+    if ($("#dark").is(":checked")) {
+        $("#theme-light").prop("disabled", true);
+        $("#theme-dark").prop("disabled", false);
+    } else {
+        $("#theme-light").prop("disabled", false);
+        $("#theme-dark").prop("disabled", true);
+    }
+    if (localStorage) localStorage.setItem("darkmode", $("#dark").is(":checked"));
 }
 
 $(setDefaults);
-$("#dark").prop("checked", localStorage.getItem("darkmode")==="true");
+if (localStorage) {
+    $("#dark").prop("checked", localStorage.getItem("darkmode")==="true");
+}
 $(changeTheme);

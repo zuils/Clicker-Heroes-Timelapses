@@ -7,7 +7,16 @@
 	<title>CH Timelapse Calculator</title>
 	<link rel="stylesheet" href="css/normalize.css">
 	<link rel="stylesheet" href="css/main-v003.css">
-    <link id="theme" rel="stylesheet" href="css/light-theme-v002.css">
+    <link rel="stylesheet" href="css/light-theme-v002.css" id="theme-light" title="Light">
+    <link rel="stylesheet" href="css/dark-theme-v002.css" id="theme-dark" title="Dark" disabled>
+    <script>
+        if (localStorage) {
+            if (localStorage.getItem("darkmode")==="true") {
+                document.getElementById("theme-light").disabled = true;
+                document.getElementById("theme-dark").disabled = false;
+            }
+        }
+    </script>
 	<link rel="icon" type="image/png" href="Chronos.png">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
@@ -105,7 +114,7 @@
 				</div>
 			</div>
 		</div>
-		<script src="js/pako-bundle.min.js"></script>
+		<script src="js/pako.min.js"></script>
 		<script src="js/readSave.js"></script>
         <script src="js/checkAncients.js"></script>
 		<script src="js/main.js"></script>

@@ -41,7 +41,9 @@ function readSave() {
     }
 }
 
-function printSave(input=true) {
+function printSave(input) {
+    // IE sucks
+    if (input === undefined || input === null) input = true;
     print = Boolean(input);
     return print;
 }
