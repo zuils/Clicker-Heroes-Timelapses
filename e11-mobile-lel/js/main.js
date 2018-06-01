@@ -482,6 +482,7 @@ function refresh(test, logHeroSouls, xyliqilLevel, chorLevel, autoClickers) {
                 zone: highestZone,
                 zoneDisplay: highestZone.toLocaleString() + " (max zone)",
             });
+            startingZone = highestZone;
         } else {
             startingZone = highestZone;
         }
