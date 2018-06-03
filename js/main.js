@@ -362,7 +362,6 @@ function refresh(test, logHeroSouls, xyliqilLevel, chorLevel, autoClickers) {
         this.chorLevel = chorLevel;
         this.autoClickers = autoClickers;
         this.minZones = 8000;
-        this.use168h = true;
     } else {
         let IEsucks = getInputs();
         this.logHeroSouls = IEsucks[0];
@@ -371,7 +370,6 @@ function refresh(test, logHeroSouls, xyliqilLevel, chorLevel, autoClickers) {
         this.autoClickers = IEsucks[3];
         this.minZones = IEsucks[4];
         this.QAStrat = IEsucks[5];
-        this.use168h = $("#TL168").is(":checked");
     }
     if (this.logHeroSouls < 0) { return false; }
     
@@ -406,7 +404,7 @@ function refresh(test, logHeroSouls, xyliqilLevel, chorLevel, autoClickers) {
         zonesGained = highestZone - startingZone;
         let duration;
         if (zonesGained < this.minZones) { break; }
-        if (this.use168h && (zonesGained > 360000) && (this.minZones <= 756000)) {
+        if ((zonesGained > 360000) && (this.minZones <= 756000)) {
             duration = "168h";
             zonesGained = Math.min(756000, zonesGained);
             rubyCost += 50;
