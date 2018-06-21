@@ -12,7 +12,7 @@ function showAdvancedClick() {
 }
 
 function setDefaults() {
-    $("#minZones").val(8000);
+    $("#minZones").val(20000);
     $("#QAStrat").val("perRuby");
 }
 
@@ -312,6 +312,8 @@ function findHighestZone(totalDps) {
     } else {
         this.zone = (totalDps - hp200k) / Math.log10(1.545) + 200000;
     }
+    let bossMultiplier = Math.floor(this.zone / 500) * 0.4 + 5;
+    this.zone -= Math.log(bossMultiplier) / Math.log(1.545);
     return Math.floor(this.zone);
 }
 
@@ -374,6 +376,7 @@ function refresh(test, logHeroSouls, xyliqilLevel, chorLevel, autoClickers) {
     if (this.logHeroSouls < 0) { return false; }
     
     let logCps = Math.max(1 + Math.log10(this.autoClickers), 1 + (this.autoClickers - 1) * Math.log10(1.5));
+    logCps = Math.min(logCps, 308);
     let logXylBonus = Math.log10(1.5) * this.xyliqilLevel;
 
     let previousHZT = (this.logHeroSouls - 5) / Math.log10(1.25) * 5;
@@ -400,7 +403,8 @@ function refresh(test, logHeroSouls, xyliqilLevel, chorLevel, autoClickers) {
         let heroLevel = getHeroLevel(logGold, bestHero, heroType);
         let heroDps = findHeroDps(bestHero, heroLevel, heroType, gilds);
         let highestZone = findHighestIdleZone(this.logHeroSouls, heroDps, this.xyliqilLevel, this.autoClickers);
-
+        highestZone = highestZone - highestZone % 5 + 4;
+        
         zonesGained = highestZone - startingZone;
         let duration;
         if (zonesGained < this.minZones) { break; }
@@ -448,7 +452,9 @@ function refresh(test, logHeroSouls, xyliqilLevel, chorLevel, autoClickers) {
         let heroLevel = getHeroLevel(logGold, bestHero, heroType);
         let heroDps = findHeroDps(bestHero, heroLevel, heroType, gilds);
         let combo = Math.log10(Math.max((startingZone - timelapseZoneMax) / 2.25, 1)) + logCps;
+        combo = Math.min(combo, 308);
         let highestZone = findHighestActiveZone(this.logHeroSouls, heroDps + combo + logCps);
+        highestZone = highestZone - highestZone % 5 + 4;
 
         zonesGained = highestZone - startingZone;
         if (zonesGained <= 10) {
