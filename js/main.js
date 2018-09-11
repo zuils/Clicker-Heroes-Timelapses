@@ -564,11 +564,11 @@ function changeTheme() {
     if (localStorage) localStorage.setItem("darkmode", $("#dark").is(":checked"));
 }
 
-$(window).on('load', setDefaults);
+$(setDefaults);
 
-$(window).on('load', changeTheme);
+$(changeTheme);
 
-$(window).on('load', function() {
+$(function() {
     if (localStorage) {
         $("#dark").prop("checked", localStorage.getItem("darkmode")==="true");
     }
