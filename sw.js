@@ -1,4 +1,4 @@
-var CACHE_NAME = 'my-site-cache-v3';
+var CACHE_NAME = 'timelapses-cache-v1';
 var urlsToCache = [
     '.',
     'css/dark-theme-v002.css',
@@ -35,8 +35,9 @@ self.addEventListener('activate', function(event) {
         caches.keys().then(function(cacheNames) {
             return Promise.all(
                 cacheNames.map(function(cacheName) {
-                    if (cacheName !== CACHE_NAME)
-                        return caches.delete(cacheName);
+                    if (cacheName.slice(0,16) == "timelapses-cache") {
+                        if (cacheName !== CACHE_NAME) return caches.delete(cacheName);
+                    }
                 })
             )
         })
