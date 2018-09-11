@@ -1,8 +1,8 @@
-var CACHE_NAME = 'timelapses-cache-v6';
+var CACHE_NAME = 'timelapses-cache-v7';
 var urlsToCache = [
     '.',
     'css/dark-theme-v003.css',
-    'css/light-theme-v003.css',
+    'css/light-theme-v004.css',
     'css/main-v004.css',
     'css/normalize.css',
     'js/checkAncients.js',

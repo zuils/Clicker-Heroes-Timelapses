@@ -4,12 +4,12 @@
 	<meta http-equiv="content-type" content="text/html;">
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1 user-scalable=0">
-    <meta name="theme-color" content="#506080">
+    <meta name="theme-color" content="#5060b0">
     <meta name="Description" content="Plan your Timelapses for Clicker Heroes.">
 	<title>CH Timelapse Calculator</title>
 	<link rel="stylesheet" href="css/normalize.css">
 	<link rel="stylesheet" href="css/main-v004.css">
-    <link rel="stylesheet" href="css/light-theme-v003.css" id="theme-light" title="Light">
+    <link rel="stylesheet" href="css/light-theme-v004.css" id="theme-light" title="Light">
     <link rel="stylesheet" href="css/dark-theme-v003.css" id="theme-dark" title="Dark" disabled>
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" sizes="192x192" href="icons/chronos192.png">
@@ -71,7 +71,7 @@
 								<label for="autoclickers">Auto Clickers:</label>
 								<input value="0" id="autoclickers" type="text">
 							</div>
-                            <input type="checkbox" id="dark" class="checkbox" onclick="changeTheme()">Dark Theme
+                            <input type="checkbox" id="dark" class="checkbox" onclick="changeTheme()"><label for="dark">Dark Theme</label>
 							<br><button id="calculateButton" onclick="refresh()">Calculate</button>
                             <hr>
                             <button id="showAdvanced" onclick="showAdvancedClick()">Show Advanced Settings</button>
@@ -119,6 +119,7 @@
 					<div class="panel">
 						<div class="title">Read Save</div>
 						<div class="content">
+                            <label for="savegame"></label>
 							<textarea id="savegame" placeholder="Paste your save game here" autofocus onclick="this.focus();this.select()"></textarea>
 							<br><button id="readSaveButton" onclick="readSave()">Read Save</button>
 						</div>
