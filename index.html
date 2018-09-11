@@ -8,9 +8,9 @@
     <meta name="Description" content="Plan your Timelapses for Clicker Heroes.">
 	<title>CH Timelapse Calculator</title>
 	<link rel="stylesheet" href="css/normalize.css">
-	<link rel="stylesheet" href="css/main-v003.css">
-    <link rel="stylesheet" href="css/light-theme-v002.css" id="theme-light" title="Light">
-    <link rel="stylesheet" href="css/dark-theme-v002.css" id="theme-dark" title="Dark" disabled>
+	<link rel="stylesheet" href="css/main-v004.css">
+    <link rel="stylesheet" href="css/light-theme-v003.css" id="theme-light" title="Light">
+    <link rel="stylesheet" href="css/dark-theme-v003.css" id="theme-dark" title="Dark" disabled>
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" sizes="192x192" href="icons/chronos192.png">
     <script>
@@ -34,7 +34,7 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js" defer></script>
 </head>
 	<body>
-		<div class="container">
+		<main class="container" role="main">
 			<div class="boxes">
 				<div class="box-12 collapsible">
 					<div class="panel">
@@ -56,19 +56,19 @@
 						<div class="title">Inputs</div>
 						<div class="content">
 							<div class="numberInput">
-								<p>(log)HeroSouls:</p>
+								<label for="hero_souls">(log)HeroSouls:</label>
 								<input value="150" id="hero_souls" type="text">
 							</div>
 							<div class="numberInput">
-								<p>Xyliqil:</p>
+								<label for="xyliqil_level">Xyliqil:</label>
 								<input value="0" id="xyliqil_level" type="text">
 							</div>
 							<div class="numberInput">
-								<p>Chor'gorloth:</p>
+								<label for="chor_level">Chor'gorloth:</label>
 								<input value="0" id="chor_level" type="text">
 							</div>
                             <div class="numberInput">
-								<p>Auto Clickers:</p>
+								<label for="autoclickers">Auto Clickers:</label>
 								<input value="0" id="autoclickers" type="text">
 							</div>
                             <input type="checkbox" id="dark" class="checkbox" onclick="changeTheme()">Dark Theme
@@ -77,11 +77,11 @@
                             <button id="showAdvanced" onclick="showAdvancedClick()">Show Advanced Settings</button>
                             <div id="advancedSettings">
 								<div class="numberInput">
-									<p>Min Zones:</p>
+									<label for="minZones">Min Zones:</label>
 									<input id="minZones" type="text" style="font-size:12px;">
 								</div>
                                 <div class="numberInput">
-									<p>QA Strategy:</p>
+									<label for="QAStrat">QA Strategy:</label>
 									<select id="QAStrat" onChange="refresh();">
                                         <option value="perRuby">Zones Per Ruby</option>
                                         <option value="highest">Highest Zone</option>
@@ -125,7 +125,7 @@
 					</div>
 				</div>
 			</div>
-		</div>
+		</main>
 		<script src="js/pako.min.js" defer></script>
 		<script src="js/readSave.js" defer></script>
         <script src="js/checkAncients.js" defer></script>

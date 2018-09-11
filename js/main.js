@@ -574,10 +574,6 @@ $(function() {
     $('.collapsible .title').click(function(){
         $(this).parent().find('.content').toggle();
     });
-
-    $('.numberInput p').click(function(){
-        $(this).parent().find('input').focus();
-    });
     
     $("#hero_souls").keyup(enterKey);
 
