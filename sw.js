@@ -8,7 +8,7 @@ var urlsToCache = [
     '/js/main.js',
     '/js/pako.min.js',
     '/js/readSave.js'
-]
+];
 
 self.addEventListener('install', function(event) {
     event.waitUntil(
