@@ -578,4 +578,13 @@ $(setDefaults);
 if (localStorage) {
     $("#dark").prop("checked", localStorage.getItem("darkmode")==="true");
 }
+
 $(changeTheme);
+
+$('.collapsible .title').click(function(){
+    $(this).parent().find('.content').toggle();
+});
+
+$('.numberInput p').click(function(){
+    $(this).parent().find('input').focus();
+});
