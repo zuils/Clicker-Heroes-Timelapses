@@ -565,13 +565,14 @@ function changeTheme() {
 }
 
 $(window).on('load', setDefaults);
-if (localStorage) {
-    $("#dark").prop("checked", localStorage.getItem("darkmode")==="true");
-}
 
 $(window).on('load', changeTheme);
 
 $(window).on('load', function() {
+    if (localStorage) {
+        $("#dark").prop("checked", localStorage.getItem("darkmode")==="true");
+    }
+
     $('.collapsible .title').click(function(){
         $(this).parent().find('.content').toggle();
     });
