@@ -527,6 +527,10 @@ function refresh(test, logHeroSouls, xyliqilLevel, chorLevel, autoClickers) {
         }
     }
     $("#Recommend").html("Recommended: " + action);
+    
+    $('html, body').animate({
+        scrollTop: ($('#results').offset().top)
+    },200);
 }
 
 function test() {
