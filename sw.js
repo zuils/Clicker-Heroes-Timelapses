@@ -1,5 +1,6 @@
 var CACHE_NAME = 'my-site-cache-v1';
 var urlsToCache = [
+    '.',
     'css/dark-theme-v002.css',
     'css/light-theme-v002.css',
     'css/main-v003.css',
