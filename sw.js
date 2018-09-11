@@ -14,7 +14,7 @@ self.addEventListener('install', function(event) {
     event.waitUntil(
         caches.open(CACHE_NAME).then(function(cache) {
             return cache.addAll(urlsToCache);
-        });
+        })
     );
 });
 
@@ -25,7 +25,7 @@ self.addEventListener('fetch', function(event) {
                 return response;
             }
             return fetch(event.request);
-        });
+        })
     );
 });
 
@@ -36,7 +36,7 @@ self.addEventListener('activate', function(event) {
                 cacheNames.map(function(cacheName) {
                     return caches.delete(cacheName);
                 });
-            );
+            )
         });
     );
 });
