@@ -1,13 +1,13 @@
 var CACHE_NAME = 'my-site-cache-v1';
 var urlsToCache = [
-    '/css/dark-theme-v002.css',
-    '/css/light-theme-v002.css',
-    '/css/main-v003.css',
-    '/css/normalize.css',
-    '/js/checkAncients.js',
-    '/js/main.js',
-    '/js/pako.min.js',
-    '/js/readSave.js'
+    'css/dark-theme-v002.css',
+    'css/light-theme-v002.css',
+    'css/main-v003.css',
+    'css/normalize.css',
+    'js/checkAncients.js',
+    'js/main.js',
+    'js/pako.min.js',
+    'js/readSave.js'
 ];
 
 self.addEventListener('install', function(event) {
