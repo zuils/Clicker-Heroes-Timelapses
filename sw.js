@@ -35,7 +35,7 @@ self.addEventListener('activate', function(event) {
             return Promise.all(
                 cacheNames.map(function(cacheName) {
                     return caches.delete(cacheName);
-                });
+                })
             )
         });
     );
