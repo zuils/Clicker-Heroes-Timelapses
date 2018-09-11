@@ -553,16 +553,6 @@ function enterKey(ev) {
     if (ev.which === 13) refresh();
 }
 
-$("#hero_souls").keyup(enterKey);
-
-$("#xyliqil_level").keyup(enterKey);
-
-$("#chor_level").keyup(enterKey);
-
-$("#autoclickers").keyup(enterKey);
-
-$("#minZones").keyup(enterKey);
-
 function changeTheme() {
     if ($("#dark").is(":checked")) {
         $("#theme-light").prop("disabled", true);
@@ -574,17 +564,29 @@ function changeTheme() {
     if (localStorage) localStorage.setItem("darkmode", $("#dark").is(":checked"));
 }
 
-$(window).load(setDefaults);
+$(window).on('load', setDefaults);
 if (localStorage) {
     $("#dark").prop("checked", localStorage.getItem("darkmode")==="true");
 }
 
-$(window).load(changeTheme);
+$(window).on('load', changeTheme);
 
-$(window).load('.collapsible .title').click(function(){
-    $(this).parent().find('.content').toggle();
-});
+$(window).on('load', function() {
+    $('.collapsible .title').click(function(){
+        $(this).parent().find('.content').toggle();
+    });
 
-$(window).load('.numberInput p').click(function(){
-    $(this).parent().find('input').focus();
+    $('.numberInput p').click(function(){
+        $(this).parent().find('input').focus();
+    });
+    
+    $("#hero_souls").keyup(enterKey);
+
+    $("#xyliqil_level").keyup(enterKey);
+
+    $("#chor_level").keyup(enterKey);
+
+    $("#autoclickers").keyup(enterKey);
+
+    $("#minZones").keyup(enterKey);
 });
