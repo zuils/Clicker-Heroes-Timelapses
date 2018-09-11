@@ -566,8 +566,6 @@ function changeTheme() {
 
 $(setDefaults);
 
-$(changeTheme);
-
 $(function() {
     if (localStorage) {
         $("#dark").prop("checked", localStorage.getItem("darkmode")==="true");
