@@ -574,17 +574,17 @@ function changeTheme() {
     if (localStorage) localStorage.setItem("darkmode", $("#dark").is(":checked"));
 }
 
-$(setDefaults);
+$(window).load(setDefaults);
 if (localStorage) {
     $("#dark").prop("checked", localStorage.getItem("darkmode")==="true");
 }
 
-$(changeTheme);
+$(window).load(changeTheme);
 
-$('.collapsible .title').click(function(){
+$(window).load('.collapsible .title').click(function(){
     $(this).parent().find('.content').toggle();
 });
 
-$('.numberInput p').click(function(){
+$(window).load('.numberInput p').click(function(){
     $(this).parent().find('input').focus();
 });
