@@ -1,4 +1,4 @@
-var CACHE_NAME = 'timelapses-cache-v10';
+var CACHE_NAME = 'timelapses-cache-v11';
 var urlsToCache = [
     '.',
     'css/dark-theme-v003.css',
@@ -41,7 +41,7 @@ self.addEventListener('fetch', function(event) {
                     });
                 });
             }
-        });
+        })
     );
 });
 
