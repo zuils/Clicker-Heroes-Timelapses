@@ -1,4 +1,4 @@
-var CACHE_NAME = 'timelapses-cache-v12';
+var CACHE_NAME = 'timelapses-cache-v13';
 var urlsToCache = [
     '.',
     'css/dark-theme-v003.css',
@@ -21,11 +21,26 @@ self.addEventListener('install', function(event) {
 
 self.addEventListener('fetch', function(event) {
     event.respondWith(
-        caches.match(event.request).then(function(response) {
-            if (response) {
-                return response;
+        caches.has(CACHE_NAME).then(function(exists) {
+            if (exists) {
+                caches.match(event.request).then(function(response) {
+                    if (response) {
+                        return response;
+                    }
+                    return fetch(event.request);
+                });
+            } else {
+                caches.open(CACHE_NAME).then(function(cache) {
+                    return cache.addALL(urlsToCache);
+                }).then(function(cache) {
+                    caches.match(event.request).then(function(response) {
+                        if (response) {
+                            return response;
+                        }
+                        return fetch(event.request);
+                    });
+                });
             }
-            return fetch(event.request);
         })
     );
 });
