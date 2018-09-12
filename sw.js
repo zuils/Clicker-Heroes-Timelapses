@@ -1,4 +1,4 @@
-var CACHE_NAME = 'timelapses-cache-v8';
+var CACHE_NAME = 'timelapses-cache-v9';
 var urlsToCache = [
     '.',
     'css/dark-theme-v003.css',
@@ -21,12 +21,27 @@ self.addEventListener('install', function(event) {
 
 self.addEventListener('fetch', function(event) {
     event.respondWith(
-        caches.match(event.request).then(function(response) {
-            if (response) {
-                return response;
+        caches.has(CACHE_NAME).then(function(cacheExists) {
+            if (cacheExists) {
+                caches.match(event.request).then(function(response) {
+                    if (response) {
+                        return response;
+                    }
+                    return fetch(event.request);
+                });
+            } else {
+                caches.open(CACHE_NAME).then(function(cache) {
+                    cache.addAll(urlsToCache).then(function() {
+                        caches.match(event.request).then(function(response) {
+                            if (response) {
+                                return response;
+                            }
+                            return fetch(event.request);
+                        });
+                    }
+                })
             }
-            return fetch(event.request);
-        })
+        });
     );
 });
 
@@ -41,11 +56,6 @@ self.addEventListener('activate', function(event) {
                 }).map(function(cacheName) {
                     return caches.delete(cacheName);
                 })
-                /*cacheNames.map(function(cacheName) {
-                    if (cacheName.slice(0,16) == "timelapses-cache") {
-                        if (cacheName !== CACHE_NAME) return caches.delete(cacheName);
-                    }
-                })*/
             )
         })
     );
