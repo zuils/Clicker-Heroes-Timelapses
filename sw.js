@@ -1,4 +1,4 @@
-var CACHE_NAME = 'timelapses-cache-v15';
+var CACHE_NAME = 'timelapses-cache-v16';
 var urlsToCache = [
     '.',
     'css/dark-theme-v003.css',
@@ -26,7 +26,7 @@ self.addEventListener('fetch', function(event) {
             if (exists) return exists
             else throw 'Cache does not exist';
         })
-        .catch(error) {
+        .catch(function(error) {
             return caches.open(CACHE_NAME).then(function(cache) {
                 return cache.addAll(urlsToCache);
             });
