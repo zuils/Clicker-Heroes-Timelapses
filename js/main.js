@@ -3,6 +3,8 @@ Math.log10 = function(x) {
     return Math.log(x) / Math.LN10;
 }
 
+var readingSave = false;
+
 var settingsVisible = false;
 
 function showAdvancedClick() {
@@ -356,7 +358,6 @@ function refresh(test, logHeroSouls, xyliqilLevel, chorLevel, autoClickers) {
     if (xyliqilLevel === undefined || xyliqilLevel === null) xyliqilLevel = 0;
     if (chorLevel === undefined || chorLevel === null) chorLevel = 0;
     if (autoClickers === undefined || autoClickers === null) autoClickers = 5;
-    $("#ancientCheckResults").parent().hide();
     // Inputs
     if (test) {
         this.logHeroSouls = logHeroSouls;
@@ -528,9 +529,14 @@ function refresh(test, logHeroSouls, xyliqilLevel, chorLevel, autoClickers) {
     }
     $("#Recommend").html("Recommended: " + action);
     
-    $('html, body').animate({
-        scrollTop: ($('#results').offset().top)
-    },200);
+    if (!readingSave) {
+        $("#ancientCheckResults").parent().hide();
+        $('html, body').animate({
+            scrollTop: ($('#results').offset().top)
+        },200);
+    } else {
+        return [timelapseZoneMax, timelapses[numTLs].zone];
+    }
 }
 
 function test() {
