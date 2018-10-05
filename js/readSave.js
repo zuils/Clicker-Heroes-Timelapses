@@ -31,10 +31,17 @@ function readSave() {
         $("#chor_level").val(outsiders[2].level);
         $("#autoclickers").val(data.autoclickers);
         if (print) { $("#savegame").val(JSON.stringify(data,null,1)); }
+        //check kuma/borb
+        let kumaLevel = data.ancients.ancients[21].level;
+        let kumaEffect = 8 * (1 - Math.exp(-0.025 * kumaLevel));
+        let borbLevel = data.outsiders.outsiders[6].level;
+        let mpzReduction = kumaEffect * (1 + borbLevel / 8);
+        borbLimit = Math.floor((mpzReduction - 8) * 10) * 500 + 499;
         let IEsucks = refresh();
         let timelapseZoneMax = IEsucks[0];
         let highestZone = IEsucks[1];
         checkAncients(data, timelapseZoneMax, highestZone, heroSoulsInput);
+        borbLimit = false;
     } else if (txt) {
         $("#savegame").val("");
     }

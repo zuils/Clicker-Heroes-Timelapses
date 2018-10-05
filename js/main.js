@@ -4,6 +4,7 @@ Math.log10 = function(x) {
 }
 
 var readingSave = false;
+var borbLimit = false;
 
 var settingsVisible = false;
 
@@ -439,6 +440,8 @@ function refresh(test, logHeroSouls, xyliqilLevel, chorLevel, autoClickers) {
         });
 
         startingZone = highestZone;
+        
+        if (borbLimit && startingZone > borbLimit) { break; }
     } while (zonesGained >= this.minZones);
 
     let timelapseZoneMax = startingZone;
@@ -459,8 +462,26 @@ function refresh(test, logHeroSouls, xyliqilLevel, chorLevel, autoClickers) {
 
         zonesGained = highestZone - startingZone;
         if (zonesGained <= 10) {
-            let activeZonesGained = startingZone - timelapseZoneMax;
-            let durationSeconds = Math.ceil(activeZonesGained / 8000 * 3600);
+            let durationSeconds;
+            if (borbLimit && highestZone > borbLimit) {
+                if (borbLimit > 0) {
+                    let flatZones = borbLimit - timelapseZoneMax;
+                    let n = (highestZone - borbLimit) / 10000;
+                    let highZones = n * (n + 1) * 10000;
+                    let zonesTraveled = flatZones + highZones;
+                    durationSeconds = Math.ceil(zonesTraveled / 8000 * 3600);
+                } else {
+                    let a = (highestZone - borbLimit) / 10000;
+                    let zonesA = a * (a + 1) * 10000;
+                    let b = -borbLimit / 10000;
+                    let zonesB = b * (b + 1) * 10000;
+                    let zonesTraveled = zonesA - zonesB;
+                    durationSeconds = Math.ceil(zonesTraveled / 8000 * 3600);
+                }
+            } else {
+                let activeZonesGained = startingZone - timelapseZoneMax;
+                durationSeconds = Math.ceil(activeZonesGained / 8000 * 3600);
+            }
             let hours = Math.floor(durationSeconds / 3600);
             let minutes = Math.floor((durationSeconds - (hours * 3600)) / 60);
             let seconds = durationSeconds - hours * 3600 - minutes * 60;

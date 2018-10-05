@@ -60,12 +60,6 @@ function checkAncients(data, timelapseZoneMax, highestZone, heroSoulsInput) {
     checkList(missing, underleveled, ancients, [29, 32], (heroSouls - 5) / 2.5);
     //check morgulis
     checkList(missing, underleveled, ancients, [16], heroSouls - 5);
-    //check kuma/borb
-    let kumaLevel = data.ancients.ancients[21].level;
-    let kumaEffect = 8 * (1 - Math.exp(-0.025 * kumaLevel));
-    let borbLevel = data.outsiders.outsiders[6].level;
-    let mpzReduction = kumaEffect * (1 + borbLevel / 8);
-    let borbLimit = Math.floor((mpzReduction - 8) * 10) * 500 + 500;
     //check rubies
     let rubies = data.rubies;
     let logHeroSouls;
@@ -109,11 +103,12 @@ function checkAncients(data, timelapseZoneMax, highestZone, heroSoulsInput) {
         results = results.slice(0, -2);
         results += "<br>";
     }
-    if (timelapseZoneMax > borbLimit) {
-        results += "You will have more than 2 monsters per zone starting from zone " + borbLimit.toLocaleString() + "! Timelapse predictions beyond this zone will be inaccurate!"
+    if (borbLimit < 0) {
+        let mpzStart = -(borbLimit - 499) / 5000 + 2;
+        results += "You have " + mpzStart + " monsters per zone, leading to a longer ascension.";
         results += "<br>"
     } else if (highestZone > borbLimit) {
-        results += "You will have more than 2 monsters per zone starting from zone " + borbLimit.toLocaleString() + "; the ascension may take considerably longer than predicted here!"
+        results += "You will have more than 2 monsters per zone starting from zone " + borbLimit.toLocaleString() + ", leading to a longer ascension."
         results += "<br>"
     }
     if (rubiesNeeded > rubies) {
