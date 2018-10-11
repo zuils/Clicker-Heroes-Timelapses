@@ -321,19 +321,19 @@ function findHighestZone(totalDps) {
 }
 
 function findHighestIdleZone(logHeroSouls, heroDps, xyliqilLevel, autoClickers) {
-    let ancientDps = logHeroSouls * 2.4 + Math.log10(1.5) * 2 * xyliqilLevel;
+    let ancientDps = logHeroSouls * 2.4 + Math.log10(1.5) * 2 * xyliqilLevel -1.4457374595558059145523937994475;
     let totalDps = heroDps + ancientDps + Math.log10(autoClickers + 1);
     return findHighestZone(totalDps);
 }
 
 function findHighestActiveZone(logHeroSouls, heroDps) {
-    let ancientDps = logHeroSouls * 2.9;
+    let ancientDps = logHeroSouls * 2.9 -1.8159188043029278373206243377068;
     let totalDps = heroDps + ancientDps;
     return findHighestZone(totalDps);
 }
 
 function getMonsterGold(level, logHeroSouls) {
-    let ancientGold = logHeroSouls * 1.5;
+    let ancientGold = logHeroSouls * 1.5 -1.1105440342413657683046916147778;
     if (level < 140) {
         return Math.log10(1.6) * (level - 1) + ancientGold - Math.log10(15);
     } else {
@@ -445,19 +445,23 @@ function refresh(test, logHeroSouls, xyliqilLevel, chorLevel, autoClickers) {
     } while (zonesGained >= this.minZones);
 
     let timelapseZoneMax = startingZone;
+    let activeAdvantage = this.logHeroSouls * 0.5 + logCps -0.3701813447471219227682305382593 - Math.log10(1.5) * 2 * this.xyliqilLevel - Math.log10(autoClickers + 1);
 
     do {
+        let useActive = activeAdvantage > 0 && logCps < 307;
         let logGold = getMonsterGold(startingZone, this.logHeroSouls);
         logGold += Math.log10(1.15 / 0.15);
-        logGold += logCps;
+        logGold += useActive ? logCps : logXylBonus;;
         let IEsucks = findBestHero(logGold);
         let bestHero = IEsucks[0];
         let heroType = IEsucks[1];
         let heroLevel = getHeroLevel(logGold, bestHero, heroType);
         let heroDps = findHeroDps(bestHero, heroLevel, heroType, gilds);
         let combo = Math.log10(Math.max((startingZone - timelapseZoneMax) / 2.25, 1)) + logCps;
-        combo = Math.min(combo, 308);
-        let highestZone = findHighestActiveZone(this.logHeroSouls, heroDps + combo + logCps);
+        combo = Math.min(combo, 307);
+        let highestZone = useActive
+            ? findHighestActiveZone(this.logHeroSouls, heroDps + combo + logCps)
+            : findHighestIdleZone(this.logHeroSouls, heroDps, this.xyliqilLevel, this.autoClickers);
         highestZone = highestZone - highestZone % 5 + 4;
 
         zonesGained = highestZone - startingZone;
