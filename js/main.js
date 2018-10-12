@@ -52,18 +52,21 @@ function getInputs() {
         return [-1, 0, 0];
     }
 
-    let xyliqilLevel = parseInt($("#xyliqil_level").val() || 0);
+    let xyliqilLevel = parseFloat($("#xyliqil_level").val() || 0);
     if (!(xyliqilLevel >= 0)) { xyliqilLevel = 0; }
-    $("#xyliqil_level").val(xyliqilLevel);
+    xyliqilLevel = Math.floor(xyliqilLevel);
+    $("#xyliqil_level").val(xyliqilLevel.toString().replace(/\+/g,''));
 
-    let chorLevel = parseInt($("#chor_level").val() || 0);
+    let chorLevel = parseFloat($("#chor_level").val() || 0);
     if (!(chorLevel >= 0)) { chorLevel = 0; }
     if (chorLevel > 150) { chorLevel = 150; }
-    $("#chor_level").val(chorLevel);
+    chorLevel = Math.floor(chorLevel);
+    $("#chor_level").val(chorLevel.toString().replace(/\+/g,''));
 
-    let autoClickers = parseInt($("#autoclickers").val() || 0);
+    let autoClickers = parseFloat($("#autoclickers").val() || 0);
     if (!(autoClickers >= 0)) { autoClickers = 0; }
-    $("#autoclickers").val(autoClickers);
+    autoClickers = Math.floor(autoClickers);
+    $("#autoclickers").val(autoClickers.toString().replace(/\+/g,''));
     
 
     let minZones = parseInt($("#minZones").val() || 0);
@@ -298,6 +301,7 @@ let hp500 = 1 + Math.log10(1.55) * 139 + Math.log10(1.145) * 360;
 let hp200k = Math.log10(1.24) + 25409;
 
 function findHighestZone(totalDps) {
+    if (totalDps === Infinity) return 2.147e9;
     if (totalDps < hp141) {
         return 130;
     } else if (totalDps <= hp500) {
@@ -313,7 +317,7 @@ function findHighestZone(totalDps) {
             }
         }
     } else {
-        this.zone = (totalDps - hp200k) / Math.log10(1.545) + 200000;
+        this.zone = Math.min((totalDps - hp200k) / Math.log10(1.545) + 200000, 2.147e9);
     }
     let bossMultiplier = Math.floor(this.zone / 500) * 0.4 + 5;
     this.zone -= Math.log(bossMultiplier) / Math.log(1.545);
@@ -322,7 +326,10 @@ function findHighestZone(totalDps) {
 
 function findHighestIdleZone(logHeroSouls, heroDps, xyliqilLevel, autoClickers) {
     let ancientDps = logHeroSouls * 2.4 + Math.log10(1.5) * 2 * xyliqilLevel -1.4457374595558059145523937994475;
-    let totalDps = heroDps + ancientDps + Math.log10(autoClickers + 1);
+    let totalDps = heroDps + ancientDps;
+    if (autoClickers <= 2e9) {
+        totalDps += Math.log10(1.5) * autoClickers;
+    }
     return findHighestZone(totalDps);
 }
 
@@ -445,7 +452,10 @@ function refresh(test, logHeroSouls, xyliqilLevel, chorLevel, autoClickers) {
     } while (zonesGained >= this.minZones);
 
     let timelapseZoneMax = startingZone;
-    let activeAdvantage = this.logHeroSouls * 0.5 + logCps -0.3701813447471219227682305382593 - Math.log10(1.5) * 3.3895 * this.xyliqilLevel - Math.log10(autoClickers + 1);
+    let activeAdvantage = this.logHeroSouls * 0.5 + logCps -0.3701813447471219227682305382593 - Math.log10(1.5) * 3.3895 * this.xyliqilLevel;
+    if (autoClickers <= 2e9) {
+        activeAdvantage += Math.log10(1.5) * autoClickers;
+    }
 
     do {
         let useActive = activeAdvantage > 0 && logCps < 307;
@@ -487,12 +497,21 @@ function refresh(test, logHeroSouls, xyliqilLevel, chorLevel, autoClickers) {
                 durationSeconds = Math.ceil(activeZonesGained / 8000 * 3600);
             }
             let hours = Math.floor(durationSeconds / 3600);
-            let minutes = Math.floor((durationSeconds - (hours * 3600)) / 60);
-            let seconds = durationSeconds - hours * 3600 - minutes * 60;
-            if (hours   < 10) { hours   = "0" + hours; }
-            if (minutes < 10) { minutes = "0" + minutes; }
-            if (seconds < 10) { seconds = "0" + seconds; }
-            let duration = hours + ":" + minutes + ":" + seconds;
+            let duration;
+            if (hours < 72) {
+                let minutes = Math.floor((durationSeconds - (hours * 3600)) / 60);
+                let seconds = durationSeconds - hours * 3600 - minutes * 60;
+                if (hours   < 10) { hours   = "0" + hours; }
+                if (minutes < 10) { minutes = "0" + minutes; }
+                if (seconds < 10) { seconds = "0" + seconds; }
+                duration = hours + ":" + minutes + ":" + seconds;
+            } else {
+                let years = Math.floor((hours / 8765.82));
+                hours -= years * 8765.82;
+                let days = Math.floor(hours / 24);
+                hours -= days * 24;
+                duration = (years > 0 ? years.toLocaleString() + "y " : "") + days + "d " + hours.toFixed(2) + "h";
+            }
             if (bestHero === "Wepwawet2") { bestHero = "Wepwawet"; }
             timelapses.push({
                 duration: duration,
@@ -519,13 +538,29 @@ function refresh(test, logHeroSouls, xyliqilLevel, chorLevel, autoClickers) {
 
     // Display results
     let toappend = "";
-    for (let t = 0; t < timelapses.length; t++) {
+    let t = 0;
+    if (timelapses[4] && timelapses[4].duration === "168h") {
+        for (let d = 4; d < timelapses.length; d++) {
+            if (timelapses[d].duration === "168h") {
+                t = d;
+            }
+        }
+        timelapses[t].duration += " x" + (t + 1);
+        timelapses[t].zoneDisplay = timelapses[t].zone.toLocaleString() + " (+" + (timelapses[t].zone - 40).toLocaleString() + ")";
+    }
+    for (t; t < timelapses.length; t++) {
         let row = timelapses[t];
-        toappend += "<tr><td>" + row.duration + "</td><td>" + row.bestHero + "</td><td>" + row.heroLevel.toLocaleString() + "</td><td>" + row.zoneDisplay + "</td>";
+        let heroLevel;
+        if (row.heroLevel !== Infinity && row.heroLevel >= 1e21) {
+            let s = row.heroLevel.toString();
+            heroLevel = s.substr(0,5) + "e" + s.substr(s.indexOf("+"));
+        } else {
+            heroLevel = row.heroLevel.toLocaleString();
+        }
+        toappend += "<tr><td>" + row.duration + "</td><td>" + row.bestHero + "</td><td>" + heroLevel + "</td><td>" + row.zoneDisplay + "</td>";
     }
     $("#TimelapsesTable tbody").html(toappend);
-    $("#RubyCost").html("Total Rubies: " + rubyCost);
-    $("#RubyCost").html("Total Rubies: " + rubyCost);
+    $("#RubyCost").html("Total Rubies: " + rubyCost.toLocaleString());
 
     // Recommended action
     let action;
