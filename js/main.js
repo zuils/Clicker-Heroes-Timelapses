@@ -454,7 +454,7 @@ function refresh(test, logHeroSouls, xyliqilLevel, chorLevel, autoClickers) {
     let timelapseZoneMax = startingZone;
     let activeAdvantage = this.logHeroSouls * 0.5 + logCps -0.3701813447471219227682305382593 - Math.log10(1.5) * 3.3895 * this.xyliqilLevel;
     if (autoClickers <= 2e9) {
-        activeAdvantage += Math.log10(1.5) * autoClickers;
+        activeAdvantage -= Math.log10(1.5) * autoClickers;
     }
 
     do {
