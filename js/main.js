@@ -360,6 +360,7 @@ function getHeroLevel(logGold, bestHero, heroType) {
 }
 
 function refresh(test, logHeroSouls, xyliqilLevel, chorLevel, autoClickers) {
+    console.clear();
     //IE sucks
     if (test === undefined || test === null) test = false;
     if (logHeroSouls === undefined || logHeroSouls === null) logHeroSouls = 0;
@@ -385,7 +386,10 @@ function refresh(test, logHeroSouls, xyliqilLevel, chorLevel, autoClickers) {
     if (this.logHeroSouls < 0) { return false; }
     
     let logCps = Math.max(1 + Math.log10(this.autoClickers), 1 + (this.autoClickers - 1) * Math.log10(1.5));
-    logCps = Math.min(logCps, 308);
+    if (logCps >= 307) {
+        logCps = 2;
+        console.log("Too many ACs, assign a few on the monster only or progress will be broken.");
+    }
     let logXylBonus = Math.log10(1.5) * this.xyliqilLevel;
 
     let previousHZT = (this.logHeroSouls - 5) / Math.log10(1.25) * 5;
@@ -453,12 +457,15 @@ function refresh(test, logHeroSouls, xyliqilLevel, chorLevel, autoClickers) {
 
     let timelapseZoneMax = startingZone;
     let activeAdvantage = this.logHeroSouls * 0.5 + logCps -0.3701813447471219227682305382593 - Math.log10(1.5) * 3.3895 * this.xyliqilLevel;
-    if (autoClickers <= 2e9) {
-        activeAdvantage -= Math.log10(1.5) * autoClickers;
+    if (this.autoClickers <= 2e9) {
+        activeAdvantage -= Math.log10(1.5) * this.autoClickers;
+    } else {
+        console.log("Too many ACs, Nogardnit's scaling is broken past 2e9 ACs.");
     }
+    let useActive = activeAdvantage > 0;
+    if (!useActive) { console.log("Idle is better than active."); }
 
     do {
-        let useActive = activeAdvantage > 0 && logCps < 307;
         let logGold = getMonsterGold(startingZone, this.logHeroSouls);
         logGold += Math.log10(1.15 / 0.15);
         logGold += useActive ? logCps : logXylBonus;
