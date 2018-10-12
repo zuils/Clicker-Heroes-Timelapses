@@ -445,13 +445,13 @@ function refresh(test, logHeroSouls, xyliqilLevel, chorLevel, autoClickers) {
     } while (zonesGained >= this.minZones);
 
     let timelapseZoneMax = startingZone;
-    let activeAdvantage = this.logHeroSouls * 0.5 + logCps -0.3701813447471219227682305382593 - Math.log10(1.5) * 2 * this.xyliqilLevel - Math.log10(autoClickers + 1);
+    let activeAdvantage = this.logHeroSouls * 0.5 + logCps -0.3701813447471219227682305382593 - Math.log10(1.5) * 3.3895 * this.xyliqilLevel - Math.log10(autoClickers + 1);
 
     do {
         let useActive = activeAdvantage > 0 && logCps < 307;
         let logGold = getMonsterGold(startingZone, this.logHeroSouls);
         logGold += Math.log10(1.15 / 0.15);
-        logGold += useActive ? logCps : logXylBonus;;
+        logGold += useActive ? logCps : logXylBonus;
         let IEsucks = findBestHero(logGold);
         let bestHero = IEsucks[0];
         let heroType = IEsucks[1];
