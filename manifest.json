@@ -3,12 +3,12 @@
   "name": "Clicker Heroes Timelapses",
   "icons": [
     {
-      "src": "Clicker-Heroes-Timelapses/icons/chronos192.png",
+      "src": "/Clicker-Heroes-Timelapses/icons/chronos192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "Clicker-Heroes-Timelapses/icons/chronos512.png",
+      "src": "/Clicker-Heroes-Timelapses/icons/chronos512.png",
       "type": "image/png",
       "sizes": "512x512"
     }
