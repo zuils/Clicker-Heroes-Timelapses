@@ -406,6 +406,7 @@ function refresh(options) {
     let timelapses = [];
     let zonesGained;
     let rubyCost = 0;
+    let currentHero;
 
     do {
         let logGold = getMonsterGold(startingZone, userData.logHeroSouls)
@@ -425,16 +426,19 @@ function refresh(options) {
         
         zonesGained = userData.highestZone - startingZone;
         let duration;
-        if (zonesGained < userData.minZones) { break; }
-        if ((zonesGained > 360000) && (userData.minZones <= 756000)) {
+        if (zonesGained <= userData.minZones) {
+            currentHero = bestHero;
+            break;
+        }
+        if ((zonesGained >= 360000) && (userData.minZones <= 756000)) {
             duration = "168h";
             zonesGained = Math.min(756000, zonesGained);
             rubyCost += 50;
-        } else if ((zonesGained > 144000) && (userData.minZones <= 216000)) {
+        } else if ((zonesGained >= 144000) && (userData.minZones <= 216000)) {
             duration = "48h";
             zonesGained = Math.min(216000, zonesGained);
             rubyCost += 30;
-        } else if ((zonesGained > 72000) && (userData.minZones <= 108000)) {
+        } else if ((zonesGained >= 72000) && (userData.minZones <= 108000)) {
             duration = "24h";
             zonesGained = Math.min(108000, zonesGained);
             rubyCost += 20;
@@ -442,7 +446,10 @@ function refresh(options) {
             duration = "8h";
             zonesGained = Math.min(36000, zonesGained);
             rubyCost += 10;
-        } else { break; }
+        } else {
+            currentHero = bestHero;
+            break;
+        }
         userData.highestZone = startingZone + zonesGained;
 
         if (bestHero === "Wepwawet2") { bestHero = "Wepwawet"; }
@@ -470,7 +477,8 @@ function refresh(options) {
     }
     let useActive = activeAdvantage > 0;
     if (!useActive && !options.test) { console.log("Idle is better than active."); }
-
+    
+    let goldRequired = false;
     do {
         let logGold = getMonsterGold(startingZone, userData.logHeroSouls);
         logGold += Math.log10(1.15 / 0.15);
@@ -482,10 +490,14 @@ function refresh(options) {
         let heroDps = findHeroDps(bestHero, heroLevel, heroType, gilds);
         let combo = Math.log10(Math.max((startingZone - userData.timelapseZoneMax) / 2.25, 1)) + logCps;
         combo = Math.min(combo, 307);
-         userData.highestZone = useActive
+        userData.highestZone = useActive
             ? findHighestActiveZone(userData.logHeroSouls, heroDps + combo + logCps)
             : findHighestIdleZone(userData.logHeroSouls, heroDps, userData.xyliqilLevel, userData.autoClickers);
         userData.highestZone = userData.highestZone - userData.highestZone % 5 + 4;
+        if (bestHero !== currentHero) {
+            currentHero = bestHero;
+            goldRequired = true;
+        }
 
         zonesGained = userData.highestZone - startingZone;
         if (zonesGained <= 10) {
@@ -571,7 +583,29 @@ function refresh(options) {
         } else {
             heroLevel = row.heroLevel.toLocaleString();
         }
-        toappend += "<tr><td>" + row.duration + "</td><td>" + row.bestHero + "</td><td>" + heroLevel + "</td><td>" + row.zoneDisplay + "</td>";
+        let title = "";
+        if (t === (timelapses.length - 1)) {
+            if (goldRequired) {
+                goldRequired = heroCosts[currentHero] - Math.log10(1.15 / 0.15)
+                    - (useActive ? logCps : logXylBonus)
+                    - (userData.logHeroSouls * 1.5 -1.1105440342413657683046916147778)
+                    - Math.log10(1.6 / 1.15) * 139;
+                let zoneRequired = Math.floor(goldRequired / Math.log10(1.15));
+                let hoursRequired = (zoneRequired - userData.timelapseZoneMax) / 8000;
+                let h = Math.floor(hoursRequired);
+                let m = Math.round((hoursRequired - h) * 60);
+                if (m < 10) m = "0" + m;
+                let time = h + ":" + m;
+                title = "Reachable at around zone " + zoneRequired.toLocaleString() + " which is " + time + " hours in.";
+            } else if (timelapses.length > 1 && timelapses[timelapses.length - 1]) {
+                if (timelapses[timelapses.length - 2].bestHero === currentHero) {
+                    title = "Unlocked during timelapses.";
+                } else {
+                    title = "Unlocked immediately after the last timelapse."
+                }
+            }
+        }
+        toappend += "<tr title='" + title + "'><td>" + row.duration + "</td><td>" + row.bestHero + "</td><td>" + heroLevel + "</td><td>" + row.zoneDisplay + "</td>";
     }
     $("#TimelapsesTable tbody").html(toappend);
     $("#RubyCost").html("Total Rubies: " + rubyCost.toLocaleString());

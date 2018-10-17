@@ -1,4 +1,4 @@
-var CACHE_NAME = 'timelapses-cache-v24';
+var CACHE_NAME = 'timelapses-cache-v25';
 var urlsToCache = [
     '.',
     'css/dark-theme-v003.css',
