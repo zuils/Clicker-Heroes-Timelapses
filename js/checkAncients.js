@@ -43,7 +43,11 @@ function checkList(missing, underleveled, ancients, list, treshold) {
     }
 }
 
-function checkAncients(data, timelapseZoneMax, highestZone, heroSoulsInput) {
+function checkAncients() {
+    let data = userData.data;
+    let heroSoulsInput = userData.heroSoulsInput;
+    let borbLimit = userData.borbLimit;
+    
     let chor = data.outsiders.outsiders[2].level;
     let heroSoulsTotal = data.totalHeroSoulsFromAscensions;
     let lastE = heroSoulsTotal.lastIndexOf("e");
@@ -51,15 +55,37 @@ function checkAncients(data, timelapseZoneMax, highestZone, heroSoulsInput) {
         ? parseFloat(heroSoulsTotal.substr(lastE + 1)) + Math.log10(heroSoulsTotal.substr(0, lastE))
         : Math.log10(heroSoulsTotal);
     heroSouls += Math.log10(1 / 0.95) * chor;
+    
+    let results = "";
+    
     let ancients = data.ancients.ancients;
     let missing = [];
     let underleveled = [];
-    //check argaiv, bhaal, fragsworth, libertas, mammon, mimzee, pluto and siyalatas
-    checkList(missing, underleveled, ancients, [28, 15, 19, 4, 8, 9, 10, 5], (heroSouls - 5) / 2);
-    //check juggernaut and nogardnit
-    checkList(missing, underleveled, ancients, [29, 32], (heroSouls - 5) / 2.5);
-    //check morgulis
-    checkList(missing, underleveled, ancients, [16], heroSouls - 5);
+    if (!userData.useOnAscend) {
+        //check argaiv, bhaal, fragsworth, libertas, mammon, mimzee, pluto and siyalatas
+        checkList(missing, underleveled, ancients, [28, 15, 19, 4, 8, 9, 10, 5], (heroSouls - 5) / 2);
+        //check juggernaut and nogardnit
+        checkList(missing, underleveled, ancients, [29, 32], (heroSouls - 5) / 2.5);
+        //check morgulis
+        checkList(missing, underleveled, ancients, [16], heroSouls - 5);
+        if (missing.length > 0) {
+            results += "<b>Missing:</b> ";
+            for (let a = 0; a < missing.length; a++) {
+                results += ancientNames[missing[a]] + ", ";
+            }
+            results = results.slice(0, -2);
+            results += "<br>";
+        }
+        if (underleveled.length > 0) {
+            results += "<b>Underleveled:</b> ";
+            for (let a = 0; a < underleveled.length; a++) {
+                results += ancientNames[underleveled[a]] + ", ";
+            }
+            results = results.slice(0, -2);
+            results += "<br>";
+        }
+    }
+    
     //check rubies
     let rubies = data.rubies;
     let logHeroSouls;
@@ -71,7 +97,7 @@ function checkAncients(data, timelapseZoneMax, highestZone, heroSoulsInput) {
         if ((isNaN(mantissa)) || isNaN(exponent)) {
             alert("Calculation failed. logHeroSouls must be a positive number.");
             $("#hero_souls").val(150);
-            return [0, 0, 0];
+            return false;
         }
         logHeroSouls = exponent + Math.log10(mantissa);
         mantissa = Math.pow(10, logHeroSouls % 1).toFixed(3);
@@ -86,36 +112,24 @@ function checkAncients(data, timelapseZoneMax, highestZone, heroSoulsInput) {
         rubiesNeeded = Math.floor((3350 - Math.max(logHeroSouls - 3700, 0) * 0.442) / 50) * 50;
     }
     
-    let results = "";
-    if (missing.length > 0) {
-        results += "<b>Missing:</b> ";
-        for (let a = 0; a < missing.length; a++) {
-            results += ancientNames[missing[a]] + ", ";
-        }
-        results = results.slice(0, -2);
-        results += "<br>";
-    }
-    if (underleveled.length > 0) {
-        results += "<b>Underleveled:</b> ";
-        for (let a = 0; a < underleveled.length; a++) {
-            results += ancientNames[underleveled[a]] + ", ";
-        }
-        results = results.slice(0, -2);
-        results += "<br>";
-    }
     if (borbLimit < 0) {
         let mpzStart = -(borbLimit - 499) / 5000 + 2;
         results += "You have " + mpzStart + " monsters per zone, leading to a longer ascension.";
         results += "<br>"
-    } else if (highestZone > borbLimit) {
-        results += "You will have more than 2 monsters per zone starting from zone " + borbLimit.toLocaleString() + ", leading to a longer ascension."
+    } else if (userData.highestZone > borbLimit) {
+        results += "You will have more than 2 monsters per zone starting from zone " + (borbLimit + 1).toLocaleString() + ", leading to a longer ascension."
         results += "<br>"
     }
+    let altAction = false;
     if (rubiesNeeded > rubies) {
         results += "You are low on rubies! You need roughly <b>" + rubiesNeeded + " rubies</b> total for QAs up to zone 1 million. Consider <b>";
-        results += logHeroSouls > 5040 ? "saving your rubies</b>." : 
-            logHeroSouls > 2600 ? "using a single 24 hour Timelapse</b>." :
-            "saving your rubies</b>.";
+        if (logHeroSouls > 5040 || logHeroSouls <= 2600) {
+            results += "saving your rubies</b>.";
+            altAction = "Save your rubies."
+        } else {
+            results += "using a single 24 hour Timelapse</b>.";
+            altAction = "Use a single 24h Timelapse."
+        }
     }
     if (results !== "") {
         $("#ancientCheckResults").html(results);
@@ -129,4 +143,5 @@ function checkAncients(data, timelapseZoneMax, highestZone, heroSoulsInput) {
             scrollTop: ($('#results').offset().top)
         },200);
     }
+    return altAction;
 }

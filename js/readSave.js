@@ -1,5 +1,3 @@
-let print = false;
-
 function readSave() {
     readingSave = true;
     let txt = $("#savegame").val();
@@ -22,35 +20,26 @@ function readSave() {
         }
         let primalSouls = data.primalSouls;
         let heroSoulsEnd = data.stats.currentAscension.heroSoulsEnd;
+        
         let logHeroSoulsOnAscend = parseFloat(primalSouls.substr(primalSouls.lastIndexOf("e") + 1));
         let logHeroSoulsCurrent =  parseFloat(heroSoulsEnd.substr(heroSoulsEnd.lastIndexOf("e") + 1));
-        let heroSoulsInput = logHeroSoulsOnAscend > logHeroSoulsCurrent ? primalSouls : heroSoulsEnd;
+        
+        let useOnAscend = logHeroSoulsOnAscend > logHeroSoulsCurrent;
+        let heroSoulsInput = useOnAscend ? primalSouls : heroSoulsEnd;
+        
         $("#hero_souls").val(heroSoulsInput);
         let outsiders = data.outsiders.outsiders;
         $("#xyliqil_level").val(outsiders[1].level);
         $("#chor_level").val(outsiders[2].level);
         $("#autoclickers").val(data.autoclickers);
-        if (print) { $("#savegame").val(JSON.stringify(data,null,1)); }
-        //check kuma/borb
-        let kumaLevel = data.ancients.ancients[21].level;
-        let kumaEffect = 8 * (1 - Math.exp(-0.025 * kumaLevel));
-        let borbLevel = data.outsiders.outsiders[6].level;
-        let mpzReduction = kumaEffect * (1 + borbLevel / 8);
-        borbLimit = Math.floor((mpzReduction - 8) * 10) * 500 + 499;
-        let IEsucks = refresh();
-        let timelapseZoneMax = IEsucks[0];
-        let highestZone = IEsucks[1];
-        checkAncients(data, timelapseZoneMax, highestZone, heroSoulsInput);
-        borbLimit = false;
+        
+        let IEsucks = refresh({
+            data: data,
+            heroSoulsInput: heroSoulsInput,
+            useOnAscend: useOnAscend
+        });
     } else if (txt) {
         $("#savegame").val("");
     }
-    readingSave = false;
 }
 
-function printSave(input) {
-    // IE sucks
-    if (input === undefined || input === null) input = true;
-    print = Boolean(input);
-    return print;
-}
