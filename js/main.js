@@ -591,7 +591,18 @@ function refresh(options) {
                     - (userData.logHeroSouls * 1.5 -1.1105440342413657683046916147778)
                     - Math.log10(1.6 / 1.15) * 139;
                 let zoneRequired = Math.floor(goldRequired / Math.log10(1.15));
-                let hoursRequired = (zoneRequired - userData.timelapseZoneMax) / 8000;
+                    
+                let zonesTraveled;
+                if (userData.borbLimit && userData.borbLimit <= zoneRequired) {
+                    let flatZones = userData.borbLimit - userData.timelapseZoneMax;
+                    let n = (zoneRequired - userData.borbLimit) / 10000;
+                    let highZones = n * (n + 1) * 10000;
+                    zonesTraveled = flatZones + highZones;
+                } else {
+                    zonesTraveled = zoneRequired - userData.timelapseZoneMax;
+                }
+                
+                let hoursRequired = zonesTraveled / 8000;
                 let h = Math.floor(hoursRequired);
                 let m = Math.round((hoursRequired - h) * 60);
                 if (m < 10) m = "0" + m;
