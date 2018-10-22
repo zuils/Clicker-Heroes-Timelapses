@@ -43,6 +43,88 @@ function checkList(missing, underleveled, ancients, list, treshold) {
     }
 }
 
+let ascensionList = [
+    [3700, 202300],
+    [3924, 214000],
+    [4150, 225800],
+    [4380, 233100],
+    [4520, 237500],
+    [4605, 245100],
+    [4754, 249776],
+    [4844, 258893],
+    [5021, 264435],
+    [5128, 274275],
+    [5319, 280257],
+    [5435, 283895],
+    [5435, 292569],
+    [5505, 297843],
+    [5673, 301050],
+    [5576, 303000],
+    [5838, 311581],
+    [5875, 316798],
+    [6042, 319971],
+    [6143, 321900],
+    [6204, 331225],
+    [6242, 336894],
+    [6423, 336894],
+    [6532, 340342],
+    [6599, 342438],
+    [6640, 352590],
+    [6837, 358763],
+    [6956, 362516],
+    [7029, 364798],
+    [7073, 375820],
+    [7287, 382521],
+    [7417, 386595],
+    [7496, 389073],
+    [7544, 390579],
+    [7573, 401854],
+    [7791, 408710],
+    [7924, 412879],
+    [8005, 415414],
+    [8054, 416955],
+    [8084, 429008],
+    [8318, 436336],
+    [8460, 440792],
+    [8546, 443502],
+    [8599, 445149],
+    [8631, 457993],
+    [8880, 465802],
+    [9031, 470550],
+    [9123, 473437],
+    [9179, 475193],
+    [9213, 476260],
+    [9234, 489507],
+    [9490, 497561],
+    [9646, 502458],
+    [9741, 505436],
+    [9799, 556967],
+    [10798, 618650],
+    [11993, 672444],
+    [13036, 722181],
+    [14000, 788703],
+    [15289, 829151],
+    [16073, 853746],
+    [16550, 888767],
+    [17229, 910061],
+    [17642, 944483],
+    [18309, 965414],
+    [18714, 1000000]
+]
+
+function rubiesToQA(startHS, targetZone) {
+    if (startHS > 18714) return 0;
+    let rubyTotal = 0;
+    for (let i = 0; i < ascensionList.length; i++) {
+        let a = ascensionList[i]
+        if (a[0] >= startHS) {
+            if (a[1] > targetZone) { break; }
+            rubyTotal += 50;
+        }
+    }
+    return rubyTotal;
+}
+
 function checkAncients() {
     let data = userData.data;
     let heroSoulsInput = userData.heroSoulsInput;
@@ -108,8 +190,8 @@ function checkAncients() {
         $("#hero_souls").val(logHeroSouls);
     }
     let rubiesNeeded = 0;
-    if (logHeroSouls > 1320 && logHeroSouls < 9800) {
-        rubiesNeeded = Math.floor((3350 - Math.max(logHeroSouls - 3700, 0) * 0.442) / 50) * 50;
+    if (borbLimit > 200000) {
+        rubiesNeeded = rubiesToQA(logHeroSouls, borbLimit + 1);
     }
     
     if (borbLimit < 0) {
@@ -122,7 +204,7 @@ function checkAncients() {
     }
     let altAction = false;
     if (rubiesNeeded > rubies) {
-        results += "You are low on rubies! You need roughly <b>" + rubiesNeeded + " rubies</b> total for QAs up to zone 1 million. Consider <b>";
+        results += "You are low on rubies! You need roughly <b>" + rubiesNeeded + " rubies</b> total for QAs up to zone " + Math.min(borbLimit + 1, 1e6).toLocaleString() +". Consider <b>";
         if (logHeroSouls > 5040 || logHeroSouls <= 2600) {
             results += "saving your rubies</b>.";
             altAction = "Save your rubies."
