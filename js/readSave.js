@@ -19,13 +19,17 @@ function readSave() {
             data = JSON.parse(atob(txt));
         }
         let primalSouls = data.primalSouls;
-        let heroSoulsEnd = data.stats.currentAscension.heroSoulsEnd;
-        
-        let logHeroSoulsOnAscend = parseFloat(primalSouls.substr(primalSouls.lastIndexOf("e") + 1));
-        let logHeroSoulsCurrent =  parseFloat(heroSoulsEnd.substr(heroSoulsEnd.lastIndexOf("e") + 1));
+        let logHeroSoulsOnAscend = 0;
+        if ($("#primal").is(":checked")) {
+            logHeroSoulsOnAscend = parseFloat(primalSouls.substr(primalSouls.lastIndexOf("e") + 1));
+        }
+        let heroSoulsStart = data.stats.currentAscension.heroSoulsStart;
+        let logHeroSoulsCurrent =  parseFloat(heroSoulsStart.substr(heroSoulsStart.lastIndexOf("e") + 1));
         
         let useOnAscend = logHeroSoulsOnAscend > logHeroSoulsCurrent;
-        let heroSoulsInput = useOnAscend ? primalSouls : heroSoulsEnd;
+        let heroSoulsInput = useOnAscend ? primalSouls : heroSoulsStart;
+        
+        console.log(logHeroSoulsOnAscend, logHeroSoulsCurrent)
         
         $("#hero_souls").val(heroSoulsInput);
         let outsiders = data.outsiders.outsiders;
