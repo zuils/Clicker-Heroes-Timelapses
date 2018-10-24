@@ -531,10 +531,12 @@ function refresh(options) {
                 if (seconds < 10) { seconds = "0" + seconds; }
                 duration = hours + ":" + minutes + ":" + seconds;
             } else {
-                let years = Math.floor((hours / 8765.82));
-                hours -= years * 8765.82;
-                let days = Math.floor(hours / 24);
-                hours -= days * 24;
+                let dl = durationSeconds;
+                let years = Math.floor(dl / 31557600);
+                dl -= years * 31557600;
+                let days = Math.floor(dl / 86400);
+                dl -= days * 86400;
+                hours = dl / 3600;
                 duration = (years > 0 ? years.toLocaleString() + "y " : "") + days + "d " + hours.toFixed(2) + "h";
             }
             if (bestHero === "Wepwawet2") { bestHero = "Wepwawet"; }
