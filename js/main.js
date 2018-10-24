@@ -505,15 +505,15 @@ function refresh(options) {
             if (userData.borbLimit && userData.highestZone > userData.borbLimit) {
                 if (userData.borbLimit > 0) {
                     let flatZones = userData.borbLimit - userData.timelapseZoneMax;
-                    let n = (userData.highestZone - userData.borbLimit) / 10000;
-                    let highZones = n * (n + 1) * 10000;
+                    let n = userData.highestZone - userData.borbLimit;
+                    let highZones = n + (n * n) / 10700;
                     let zonesTraveled = flatZones + highZones;
                     durationSeconds = Math.ceil(zonesTraveled / 8000 * 3600);
                 } else {
-                    let a = (highestZone - userData.borbLimit) / 10000;
-                    let zonesA = a * (a + 1) * 10000;
-                    let b = -userData.borbLimit / 10000;
-                    let zonesB = b * (b + 1) * 10000;
+                    let a = highestZone - userData.borbLimit;
+                    let zonesA = a + (a * a) * 100700;
+                    let b = -userData.borbLimit;
+                    let zonesB = b + (b * b) * 10700;
                     let zonesTraveled = zonesA - zonesB;
                     durationSeconds = Math.ceil(zonesTraveled / 8000 * 3600);
                 }
