@@ -506,20 +506,20 @@ function refresh(options) {
                 if (userData.borbLimit > 0) {
                     let flatZones = userData.borbLimit - userData.timelapseZoneMax;
                     let n = userData.highestZone - userData.borbLimit;
-                    let highZones = n + (n * n) / 10700;
+                    let highZones = n + (n * n) / 10830;
                     let zonesTraveled = flatZones + highZones;
-                    durationSeconds = Math.ceil(zonesTraveled / 8000 * 3600);
+                    durationSeconds = Math.ceil(zonesTraveled / 8050 * 3600);
                 } else {
                     let a = highestZone - userData.borbLimit;
-                    let zonesA = a + (a * a) * 100700;
+                    let zonesA = a + (a * a) * 10830;
                     let b = -userData.borbLimit;
-                    let zonesB = b + (b * b) * 10700;
+                    let zonesB = b + (b * b) * 10830;
                     let zonesTraveled = zonesA - zonesB;
-                    durationSeconds = Math.ceil(zonesTraveled / 8000 * 3600);
+                    durationSeconds = Math.ceil(zonesTraveled / 8050 * 3600);
                 }
             } else {
                 let activeZonesGained = startingZone - userData.timelapseZoneMax;
-                durationSeconds = Math.ceil(activeZonesGained / 8000 * 3600);
+                durationSeconds = Math.ceil(activeZonesGained / 8050 * 3600);
             }
             let hours = Math.floor(durationSeconds / 3600);
             let duration;
@@ -597,14 +597,14 @@ function refresh(options) {
                 let zonesTraveled;
                 if (userData.borbLimit && userData.borbLimit <= zoneRequired) {
                     let flatZones = userData.borbLimit - userData.timelapseZoneMax;
-                    let n = (zoneRequired - userData.borbLimit) / 10000;
-                    let highZones = n * (n + 1) * 10000;
+                    let n = zoneRequired - userData.borbLimit;
+                    let highZones = n + (n * n) / 10830;
                     zonesTraveled = flatZones + highZones;
                 } else {
                     zonesTraveled = zoneRequired - userData.timelapseZoneMax;
                 }
                 
-                let hoursRequired = zonesTraveled / 8000;
+                let hoursRequired = zonesTraveled / 8050;
                 let h = Math.floor(hoursRequired);
                 let m = Math.round((hoursRequired - h) * 60);
                 if (m < 10) m = "0" + m;
