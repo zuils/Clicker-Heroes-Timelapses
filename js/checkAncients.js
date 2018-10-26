@@ -195,16 +195,16 @@ function checkAncients() {
     }
     
     if (borbLimit < 0) {
-        let mpzStart = -(borbLimit - 499) / 5000 + 2;
+        let mpzStart = -borbLimit / 5000 + 2;
         results += "You have " + mpzStart + " monsters per zone, leading to a longer ascension.";
         results += "<br>"
-    } else if (userData.highestZone > borbLimit) {
-        results += "You will have more than 2 monsters per zone starting from zone " + (borbLimit + 1).toLocaleString() + ", leading to a longer ascension."
+    } else if (userData.highestZone > (borbLimit + 499)) {
+        results += "You will have more than 2 monsters per zone starting from zone " + (borbLimit + 500).toLocaleString() + ", leading to a longer ascension."
         results += "<br>"
     }
     let altAction = false;
     if (rubiesNeeded > rubies) {
-        results += "You are low on rubies! You need roughly <b>" + rubiesNeeded + " rubies</b> total for QAs up to zone " + Math.min(borbLimit + 1, 1e6).toLocaleString() +". Consider <b>";
+        results += "You are low on rubies! You need roughly <b>" + rubiesNeeded + " rubies</b> total for QAs up to zone " + Math.min(borbLimit + 500, 1e6).toLocaleString() +". Consider <b>";
         if (logHeroSouls > 5040 || logHeroSouls <= 2600) {
             results += "saving your rubies</b>.";
             altAction = "Save your rubies."

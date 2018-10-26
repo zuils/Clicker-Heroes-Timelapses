@@ -384,7 +384,7 @@ function refresh(options) {
         let kumaEffect = 8 * (1 - Math.exp(-0.025 * kumaLevel));
         let borbLevel = userData.data.outsiders.outsiders[6].level;
         let mpzReduction = kumaEffect * (1 + borbLevel / 8);
-        userData.borbLimit = Math.floor((mpzReduction - 8) * 10) * 500 + 499;
+        userData.borbLimit = Math.floor((mpzReduction - 8) * 10) * 500;
     }
     
     if (!options.test) console.log(userData);
@@ -464,7 +464,7 @@ function refresh(options) {
 
         startingZone = userData.highestZone;
         
-        if (userData.borbLimit && startingZone > userData.borbLimit) { break; }
+        if (userData.borbLimit && startingZone > (userData.borbLimit + 499)) { break; }
     } while (zonesGained >= userData.minZones);
 
     userData.timelapseZoneMax = startingZone;
@@ -502,7 +502,7 @@ function refresh(options) {
         zonesGained = userData.highestZone - startingZone;
         if (zonesGained <= 10) {
             let durationSeconds;
-            if (userData.borbLimit && userData.highestZone > userData.borbLimit) {
+            if (userData.borbLimit && userData.highestZone > (userData.borbLimit + 499)) {
                 if (userData.borbLimit > 0) {
                     let flatZones = userData.borbLimit - userData.timelapseZoneMax;
                     let n = userData.highestZone - userData.borbLimit;
@@ -595,7 +595,7 @@ function refresh(options) {
                 let zoneRequired = Math.floor(goldRequired / Math.log10(1.15));
                     
                 let zonesTraveled;
-                if (userData.borbLimit && userData.borbLimit <= zoneRequired) {
+                if (userData.borbLimit && (userData.borbLimit + 499) <= zoneRequired) {
                     let flatZones = userData.borbLimit - userData.timelapseZoneMax;
                     let n = zoneRequired - userData.borbLimit;
                     let highZones = n + (n * n) / 10830;
