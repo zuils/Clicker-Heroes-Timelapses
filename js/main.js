@@ -646,7 +646,7 @@ function refresh(options) {
     } else if(userData.QAStrat === "perRuby"){
         let rubyCostTL = rubyCost - numTLs * 2; //consider mercenaries (estimated 2 rubies per TL)
         let maxZoneTL = timelapses[numTLs - 1].zone;
-        let zonesPerRubyTL = maxZoneTL / rubyCost;
+        let zonesPerRubyTL = maxZoneTL / rubyCostTL;
         let zonesPerRubyQA = previousHZT / 50;
         if(zonesPerRubyTL > zonesPerRubyQA) {
             action = "Use Timelapses as shown above.";
