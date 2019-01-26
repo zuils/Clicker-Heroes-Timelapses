@@ -557,6 +557,10 @@ function refresh(options) {
         userData.highestZone = findHighestIdleZone(userData.logHeroSouls, heroDps, userData.xyliqilLevel, userData.autoClickers);
         userData.highestZone = userData.highestZone - userData.highestZone % 5 + 4;
         
+        if (!revivedTLs) {
+            currentHero = bestHero;
+        }
+        
         IEsucks = getNextTL(startingZone);
         if (IEsucks[0]) {
             if (bestHero === "Wepwawet2") { bestHero = "Wepwawet"; }
@@ -683,27 +687,31 @@ function refresh(options) {
         if (t === (timelapses.length - 1)) {
             if (goldRequired) {
                 let zoneRequired = getZoneRequired(currentHero, useActive, logCps, logXylBonus);
-                let zonesTraveled;
-                if (userData.borbLimit && (userData.borbLimit + 499) <= zoneRequired) {
-                    let flatZones = userData.borbLimit - userData.timelapseZoneMax;
-                    let n = zoneRequired - userData.borbLimit;
-                    let highZones = n + (n * n) / 10830;
-                    zonesTraveled = flatZones + highZones;
+                if (zoneRequired <= userData.timelapseZoneMax) {
+                    title = "Unlocked immediately after the last timelapse.";
                 } else {
-                    zonesTraveled = zoneRequired - userData.timelapseZoneMax;
+                    let zonesTraveled;
+                    if (userData.borbLimit && (userData.borbLimit + 499) <= zoneRequired) {
+                        let flatZones = userData.borbLimit - userData.timelapseZoneMax;
+                        let n = zoneRequired - userData.borbLimit;
+                        let highZones = n + (n * n) / 10830;
+                        zonesTraveled = flatZones + highZones;
+                    } else {
+                        zonesTraveled = zoneRequired - userData.timelapseZoneMax;
+                    }
+                    
+                    let hoursRequired = zonesTraveled / 8050;
+                    let h = Math.floor(hoursRequired);
+                    let m = Math.round((hoursRequired - h) * 60);
+                    if (m < 10) m = "0" + m;
+                    let time = h + ":" + m;
+                    title = "Reachable at around zone " + zoneRequired.toLocaleString() + " which is " + time + " hours in.";
                 }
-                
-                let hoursRequired = zonesTraveled / 8050;
-                let h = Math.floor(hoursRequired);
-                let m = Math.round((hoursRequired - h) * 60);
-                if (m < 10) m = "0" + m;
-                let time = h + ":" + m;
-                title = "Reachable at around zone " + zoneRequired.toLocaleString() + " which is " + time + " hours in.";
             } else if (timelapses.length > 1 && timelapses[timelapses.length - 1]) {
                 if (timelapses[timelapses.length - 2].bestHero === currentHero) {
                     title = "Unlocked during timelapses.";
                 } else {
-                    title = "Unlocked immediately after the last timelapse."
+                    title = "Unlocked immediately after the last timelapse.";
                 }
             }
         }
