@@ -273,7 +273,7 @@ function findBestHero(logGold) {
     let heroType = "old";
     for (let s in heroCosts) {
         if (heroCosts.hasOwnProperty(s)) {
-            if (heroCosts[s] < logGold) {
+            if (heroCosts[s] <= logGold) {
                 bestHero = s;
                 if (s === "Xavira0") { heroType = "e10"; }
                 if (s === "Rose0") { heroType = "e11"; }
@@ -281,6 +281,24 @@ function findBestHero(logGold) {
         }
     }
     return [bestHero, heroType];
+}
+
+function findNextHero(currentHero) {
+    if (currentHero === "Dorothy5") return false;
+    let logGold = heroCosts[currentHero];
+    let nextHero;
+    let heroType = "old";
+    for (let s in heroCosts) {
+        if (heroCosts.hasOwnProperty(s)) {
+            if (s === "Xavira0") { heroType = "e10"; }
+            if (s === "Rose0") { heroType = "e11"; }
+            if (heroCosts[s] > logGold) {
+                nextHero = s;
+                break;
+            }
+        }
+    }
+    return [nextHero, heroType];
 }
 
 function findHeroDps(bestHero, heroLevel, heroType, gilds) {
@@ -365,108 +383,47 @@ function getHeroLevel(logGold, bestHero, heroType) {
     return heroLevel;
 }
 
-function refresh(options) {
-    if (options === undefined || options === null) options = {};
-    if (options.test) {
-        userData = Object.assign({}, options);
+function getZoneRequired(currentHero, useActive, logCps, logXylBonus) {
+    let goldRequired = heroCosts[currentHero] - Math.log10(1.15 / 0.15)
+        - (useActive ? logCps : logXylBonus)
+        - (userData.logHeroSouls * 1.5 -1.1105440342413657683046916147778)
+        - Math.log10(1.6 / 1.15) * 139;
+    let zoneRequired = Math.floor(goldRequired / Math.log10(1.15));
+    return zoneRequired;
+}
+
+function getNextTL(startingZone) {
+    let zonesGained = userData.highestZone - startingZone;
+    let duration;
+    let rubyCost;
+    if (zonesGained <= userData.minZones) {
+        return [false, zonesGained];
+    }
+    if ((zonesGained >= 360000) && (userData.minZones <= 756000)) {
+        duration = "168h";
+        zonesGained = Math.min(756000, zonesGained);
+        rubyCost = 50;
+    } else if ((zonesGained >= 144000) && (userData.minZones <= 216000)) {
+        duration = "48h";
+        zonesGained = Math.min(216000, zonesGained);
+        rubyCost = 30;
+    } else if ((zonesGained >= 72000) && (userData.minZones <= 108000)) {
+        duration = "24h";
+        zonesGained = Math.min(108000, zonesGained);
+        rubyCost = 20;
+    } else if (userData.minZones <= 36000) {
+        duration = "8h";
+        zonesGained = Math.min(36000, zonesGained);
+        rubyCost = 10;
     } else {
-        console.clear();
-        userData = getInputs();
+        return [false, zonesGained];
     }
+    userData.highestZone = startingZone + zonesGained;
 
-    if (userData.logHeroSouls < 0) { return false; }
-    
-    if (options.data) {
-        userData.data = options.data;
-        userData.heroSoulsInput = options.heroSoulsInput;
-        userData.useOnAscend = options.useOnAscend;
-        let kumaLevel = userData.data.ancients.ancients[21].level;
-        let kumaEffect = 8 * (1 - Math.exp(-0.025 * kumaLevel));
-        let borbLevel = userData.data.outsiders.outsiders[6].level;
-        let mpzReduction = kumaEffect * (1 + borbLevel / 8);
-        userData.borbLimit = Math.floor((mpzReduction - 8) * 10) * 500;
-    }
-    
-    if (!options.test) console.log(userData);
-    
-    let logCps = Math.max(1 + Math.log10(userData.autoClickers), 1 + (userData.autoClickers - 1) * Math.log10(1.5));
-    if (logCps >= 307) {
-        logCps = 2;
-        if (!options.test)
-            console.log("Too many ACs, assign a few on the monster only or progress will be broken.");
-    }
-    let logXylBonus = Math.log10(1.5) * userData.xyliqilLevel;
+    return [duration, zonesGained, rubyCost];
+}
 
-    let previousHZT = (userData.logHeroSouls - 5) / Math.log10(1.25) * 5;
-    let gilds = Math.max(1, Math.floor(previousHZT / 10) - 9);
-    let baseHeroSouls = userData.logHeroSouls;
-    userData.logHeroSouls += Math.log10(1 / 0.95) * userData.chorLevel - 2;
-
-    let startingZone = 40;
-    let timelapses = [];
-    let zonesGained;
-    let rubyCost = 0;
-    let currentHero;
-
-    do {
-        let logGold = getMonsterGold(startingZone, userData.logHeroSouls)
-        let idleGoldExtra = startingZone > 140
-            ? Math.log10(1.15 / 0.15)
-            : Math.log10(1.6 / 0.6);
-        idleGoldExtra += logXylBonus;
-        let activeGoldExtra = logCps + 1;
-        logGold += Math.max(idleGoldExtra, activeGoldExtra);
-        let IEsucks = findBestHero(logGold);
-        let bestHero = IEsucks[0];
-        let heroType = IEsucks[1];
-        let heroLevel = getHeroLevel(logGold, bestHero, heroType);
-        let heroDps = findHeroDps(bestHero, heroLevel, heroType, gilds);
-        userData.highestZone = findHighestIdleZone(userData.logHeroSouls, heroDps, userData.xyliqilLevel, userData.autoClickers);
-        userData.highestZone = userData.highestZone - userData.highestZone % 5 + 4;
-        
-        zonesGained = userData.highestZone - startingZone;
-        let duration;
-        if (zonesGained <= userData.minZones) {
-            currentHero = bestHero;
-            break;
-        }
-        if ((zonesGained >= 360000) && (userData.minZones <= 756000)) {
-            duration = "168h";
-            zonesGained = Math.min(756000, zonesGained);
-            rubyCost += 50;
-        } else if ((zonesGained >= 144000) && (userData.minZones <= 216000)) {
-            duration = "48h";
-            zonesGained = Math.min(216000, zonesGained);
-            rubyCost += 30;
-        } else if ((zonesGained >= 72000) && (userData.minZones <= 108000)) {
-            duration = "24h";
-            zonesGained = Math.min(108000, zonesGained);
-            rubyCost += 20;
-        } else if (userData.minZones <= 36000) {
-            duration = "8h";
-            zonesGained = Math.min(36000, zonesGained);
-            rubyCost += 10;
-        } else {
-            currentHero = bestHero;
-            break;
-        }
-        userData.highestZone = startingZone + zonesGained;
-
-        if (bestHero === "Wepwawet2") { bestHero = "Wepwawet"; }
-
-        timelapses.push({
-            duration: duration,
-            bestHero: bestHero,
-            heroLevel: heroLevel,
-            zone: userData.highestZone,
-            zoneDisplay: userData.highestZone.toLocaleString() + " (+" + zonesGained.toLocaleString() + ")",
-        });
-
-        startingZone = userData.highestZone;
-        
-        if (userData.borbLimit && startingZone > (userData.borbLimit + 499)) { break; }
-    } while (zonesGained >= userData.minZones);
-
+function getSoftCap(options, startingZone, logCps, logXylBonus, gilds) {
     userData.timelapseZoneMax = startingZone;
     let activeAdvantage = userData.logHeroSouls * 0.5 + logCps -0.3701813447471219227682305382593 - Math.log10(1.5) * 3.3895 * userData.xyliqilLevel;
     if (userData.autoClickers <= 2e9) {
@@ -494,63 +451,200 @@ function refresh(options) {
             ? findHighestActiveZone(userData.logHeroSouls, heroDps + combo + logCps)
             : findHighestIdleZone(userData.logHeroSouls, heroDps, userData.xyliqilLevel, userData.autoClickers);
         userData.highestZone = userData.highestZone - userData.highestZone % 5 + 4;
-        if (bestHero !== currentHero) {
-            currentHero = bestHero;
-            goldRequired = true;
-        }
 
         zonesGained = userData.highestZone - startingZone;
         if (zonesGained <= 10) {
-            let durationSeconds;
-            if (userData.borbLimit && userData.highestZone > (userData.borbLimit + 499)) {
-                if (userData.borbLimit > 0) {
-                    let flatZones = userData.borbLimit - userData.timelapseZoneMax;
-                    let n = userData.highestZone - userData.borbLimit;
-                    let highZones = n + (n * n) / 10830;
-                    let zonesTraveled = flatZones + highZones;
-                    durationSeconds = Math.ceil(zonesTraveled / 8050 * 3600);
-                } else {
-                    let a = highestZone - userData.borbLimit;
-                    let zonesA = a + (a * a) * 10830;
-                    let b = -userData.borbLimit;
-                    let zonesB = b + (b * b) * 10830;
-                    let zonesTraveled = zonesA - zonesB;
-                    durationSeconds = Math.ceil(zonesTraveled / 8050 * 3600);
-                }
-            } else {
-                let activeZonesGained = startingZone - userData.timelapseZoneMax;
-                durationSeconds = Math.ceil(activeZonesGained / 8050 * 3600);
-            }
-            let hours = Math.floor(durationSeconds / 3600);
-            let duration;
-            if (hours < 72) {
-                let minutes = Math.floor((durationSeconds - (hours * 3600)) / 60);
-                let seconds = durationSeconds - hours * 3600 - minutes * 60;
-                if (hours   < 10) { hours   = "0" + hours; }
-                if (minutes < 10) { minutes = "0" + minutes; }
-                if (seconds < 10) { seconds = "0" + seconds; }
-                duration = hours + ":" + minutes + ":" + seconds;
-            } else {
-                let dl = durationSeconds;
-                let years = Math.floor(dl / 31557600);
-                dl -= years * 31557600;
-                let days = Math.floor(dl / 86400);
-                dl -= days * 86400;
-                hours = dl / 3600;
-                duration = (years > 0 ? years.toLocaleString() + "y " : "") + days + "d " + hours.toFixed(2) + "h";
-            }
-            if (bestHero === "Wepwawet2") { bestHero = "Wepwawet"; }
-            timelapses.push({
-                duration: duration,
-                bestHero: bestHero,
-                heroLevel: heroLevel,
-                zone: userData.highestZone,
-                zoneDisplay: userData.highestZone.toLocaleString() + " (max zone)",
-            });
+            return [startingZone, bestHero, heroLevel];
         } else {
             startingZone = userData.highestZone;
         }
     } while (zonesGained > 10);
+}
+
+function formatTime(durationSeconds) {
+    let hours = Math.floor(durationSeconds / 3600);
+    let duration;
+    if (hours < 72) {
+        let minutes = Math.floor((durationSeconds - (hours * 3600)) / 60);
+        let seconds = durationSeconds - hours * 3600 - minutes * 60;
+        if (hours   < 10) { hours   = "0" + hours; }
+        if (minutes < 10) { minutes = "0" + minutes; }
+        if (seconds < 10) { seconds = "0" + seconds; }
+        duration = hours + ":" + minutes + ":" + seconds;
+    } else {
+        let dl = durationSeconds;
+        let years = Math.floor(dl / 31557600);
+        dl -= years * 31557600;
+        let days = Math.floor(dl / 86400);
+        dl -= days * 86400;
+        hours = dl / 3600;
+        duration = (years > 0 ? years.toLocaleString() + "y " : "") + days + "d " + hours.toFixed(2) + "h";
+    }
+    return duration;
+}
+
+function refresh(options) {
+    if (options === undefined || options === null) options = {};
+    if (options.test) {
+        userData = Object.assign({}, options);
+    } else {
+        console.clear();
+        userData = getInputs();
+    }
+
+    if (userData.logHeroSouls < 0) { return false; }
+    
+    if (options.data) {
+        userData.data = options.data;
+        userData.heroSoulsInput = options.heroSoulsInput;
+        userData.useOnAscend = options.useOnAscend;
+        let kumaLevel = userData.data.ancients.ancients[21].level;
+        let kumaEffect = 8 * (1 - Math.exp(-0.025 * kumaLevel));
+        let borbLevel = userData.data.outsiders.outsiders[6].level;
+        let mpzReduction = kumaEffect * (1 + borbLevel / 8);
+        userData.borbLimit = Math.floor((mpzReduction - 8) * 10) * 500;
+    }
+    
+    if (!options.test) console.log(userData);
+    
+    
+    let logCps = Math.max(1 + Math.log10(userData.autoClickers), 1 + (userData.autoClickers - 1) * Math.log10(1.5));
+    if (logCps >= 307) {
+        logCps = 2;
+        if (!options.test)
+            console.log("Too many ACs, assign a few on the monster only or progress will be broken.");
+    }
+    let logXylBonus = Math.log10(1.5) * userData.xyliqilLevel;
+    
+    let activeAdvantage = userData.logHeroSouls * 0.5 + logCps -0.3701813447471219227682305382593 - Math.log10(1.5) * 3.3895 * userData.xyliqilLevel;
+    if (userData.autoClickers <= 2e9) {
+        activeAdvantage -= Math.log10(1.5) * userData.autoClickers;
+    } else {
+        if (!options.test)
+            console.log("Too many ACs, Nogardnit's scaling is broken past 2e9 ACs.");
+    }
+    let useActive = activeAdvantage > 0;
+    if (!useActive && !options.test) { console.log("Idle is better than active."); }
+
+    let previousHZT = (userData.logHeroSouls - 5) / Math.log10(1.25) * 5;
+    let gilds = Math.max(1, Math.floor(previousHZT / 10) - 9);
+    let baseHeroSouls = userData.logHeroSouls;
+    userData.logHeroSouls += Math.log10(1 / 0.95) * userData.chorLevel - 2;
+
+    let startingZone = 40;
+    let timelapses = [];
+    let zonesGained = 0;
+    let rubyCost = 0;
+    let currentHero;
+    let revivedTLs = false;
+    let logGold;
+    
+    do {
+        if (!revivedTLs) {
+            logGold = getMonsterGold(startingZone, userData.logHeroSouls)
+            let idleGoldExtra = startingZone > 140
+                ? Math.log10(1.15 / 0.15)
+                : Math.log10(1.6 / 0.6);
+            idleGoldExtra += logXylBonus;
+            let activeGoldExtra = logCps + 1;
+            logGold += Math.max(idleGoldExtra, activeGoldExtra);
+        }
+        let IEsucks = findBestHero(logGold);
+        let bestHero = IEsucks[0];
+        let heroType = IEsucks[1];
+        let heroLevel = getHeroLevel(logGold, bestHero, heroType);
+        let heroDps = findHeroDps(bestHero, heroLevel, heroType, gilds);
+        userData.highestZone = findHighestIdleZone(userData.logHeroSouls, heroDps, userData.xyliqilLevel, userData.autoClickers);
+        userData.highestZone = userData.highestZone - userData.highestZone % 5 + 4;
+        
+        IEsucks = getNextTL(startingZone);
+        if (IEsucks[0]) {
+            if (bestHero === "Wepwawet2") { bestHero = "Wepwawet"; }
+            zonesGained = IEsucks[1];
+            timelapses.push({
+                duration: IEsucks[0],
+                bestHero: bestHero,
+                heroLevel: heroLevel,
+                zone: userData.highestZone,
+                zoneDisplay: userData.highestZone.toLocaleString() + " (+" + IEsucks[1].toLocaleString() + ")",
+            });
+            rubyCost += IEsucks[2];
+            startingZone = userData.highestZone;
+            revivedTLs = false;
+        } else {
+            if (revivedTLs) {
+                timelapses.pop();
+                startingZone = timelapses[0] && timelapses[timelapses.length-1].zone || 40;;
+                break;
+            } else {
+                let IEsucks = findNextHero(bestHero);
+                if (!IEsucks) { break; }
+                let nextHero = IEsucks[0];
+                zoneRequired = getZoneRequired(nextHero, useActive, logCps, logXylBonus);
+                logGold = heroCosts[nextHero];
+                if (zoneRequired >= userData.borbLimit) { break; }
+                let softCap = getSoftCap(options, startingZone, logCps, logXylBonus, gilds)[0];
+                if (zoneRequired >= softCap) { break; }
+                revivedTLs = true;
+                let zonesGained = zoneRequired - startingZone;
+                if (zonesGained <= 0) { break; }
+                let durationSeconds = Math.ceil(zonesGained / 8050 * 3600);
+                let duration = formatTime(durationSeconds);
+                timelapses.push({
+                    duration: duration + " (wait)",
+                    bestHero: bestHero,
+                    heroLevel: heroLevel,
+                    zone: zoneRequired,
+                    zoneDisplay: zoneRequired.toLocaleString() + " (+" + zonesGained.toLocaleString() + ")",
+                });
+                startingZone = zoneRequired;
+            }
+        }
+        if (userData.borbLimit && startingZone > (userData.borbLimit + 499)) { break; }
+    } while (revivedTLs || zonesGained >= userData.minZones);
+
+    userData.timelapseZoneMax = startingZone;
+    
+    let IEsucks = getSoftCap(options, startingZone, logCps, logXylBonus, gilds);
+    let softCap = IEsucks[0];
+    let bestHero = IEsucks[1];
+    let heroLevel = IEsucks[2];
+    
+    let goldRequired = false;
+    if (bestHero !== currentHero) {
+        currentHero = bestHero;
+        goldRequired = true;
+    }
+    
+    let durationSeconds;
+    if (userData.borbLimit && userData.highestZone > (userData.borbLimit + 499)) {
+        if (userData.borbLimit > 0) {
+            let flatZones = userData.borbLimit - userData.timelapseZoneMax;
+            let n = userData.highestZone - userData.borbLimit;
+            let highZones = n + (n * n) / 10830;
+            let zonesTraveled = flatZones + highZones;
+            durationSeconds = Math.ceil(zonesTraveled / 8050 * 3600);
+        } else {
+            let a = highestZone - userData.borbLimit;
+            let zonesA = a + (a * a) * 10830;
+            let b = -userData.borbLimit;
+            let zonesB = b + (b * b) * 10830;
+            let zonesTraveled = zonesA - zonesB;
+            durationSeconds = Math.ceil(zonesTraveled / 8050 * 3600);
+        }
+    } else {
+        let activeZonesGained = softCap - userData.timelapseZoneMax;
+        durationSeconds = Math.ceil(activeZonesGained / 8050 * 3600);
+    }
+    let duration = formatTime(durationSeconds);
+    if (bestHero === "Wepwawet2") { bestHero = "Wepwawet"; }
+    timelapses.push({
+        duration: duration,
+        bestHero: bestHero,
+        heroLevel: heroLevel,
+        zone: userData.highestZone,
+        zoneDisplay: userData.highestZone.toLocaleString() + " (max zone)",
+    });
 
     // Test log
     if (options.test) {
@@ -588,12 +682,7 @@ function refresh(options) {
         let title = "";
         if (t === (timelapses.length - 1)) {
             if (goldRequired) {
-                goldRequired = heroCosts[currentHero] - Math.log10(1.15 / 0.15)
-                    - (useActive ? logCps : logXylBonus)
-                    - (userData.logHeroSouls * 1.5 -1.1105440342413657683046916147778)
-                    - Math.log10(1.6 / 1.15) * 139;
-                let zoneRequired = Math.floor(goldRequired / Math.log10(1.15));
-                    
+                let zoneRequired = getZoneRequired(currentHero, useActive, logCps, logXylBonus);
                 let zonesTraveled;
                 if (userData.borbLimit && (userData.borbLimit + 499) <= zoneRequired) {
                     let flatZones = userData.borbLimit - userData.timelapseZoneMax;
