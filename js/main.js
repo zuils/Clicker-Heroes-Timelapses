@@ -293,8 +293,10 @@ function findNextHero(currentHero) {
             if (s === "Xavira0") { heroType = "e10"; }
             if (s === "Rose0") { heroType = "e11"; }
             if (heroCosts[s] > logGold) {
-                nextHero = s;
-                break;
+                if (s !== "Dorothy1" && s !== "Dorothy2" && s !== "dorothy4") {
+                    nextHero = s;
+                    break;
+                }
             }
         }
     }
