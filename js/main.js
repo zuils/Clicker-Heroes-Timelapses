@@ -15,6 +15,7 @@ function showAdvancedClick() {
 
 function setDefaults() {
     $("#minZones").val(20000);
+    $("#ascTime").val(0);
     $("#QAStrat").val("perRuby");
 }
 
@@ -68,9 +69,13 @@ function getInputs() {
     $("#autoclickers").val(autoClickers.toString().replace(/\+/g,''));
     
 
-    let minZones = parseInt($("#minZones").val() || 0);
+    let minZones = parseInt($("#minZones").val() || 1);
     if (!(minZones >= 1)) { minZones = 1; }
     $("#minZones").val(minZones);
+    
+    let ascTime = parseFloat($("#ascTime").val() || 0);
+    if (!(ascTime >= 0)) { ascTime = 0; }
+    $("#ascTime").val(ascTime);
 
     let QAStrat = $("#QAStrat").val();
     return {
@@ -79,6 +84,7 @@ function getInputs() {
         chorLevel: chorLevel,
         autoClickers: autoClickers,
         minZones: minZones,
+        ascTime: ascTime,
         QAStrat: QAStrat
     }
 }
@@ -401,15 +407,23 @@ function getNextTL(startingZone) {
     if (zonesGained <= userData.minZones) {
         return [false, zonesGained];
     }
-    if ((zonesGained >= 360000) && (userData.minZones <= 756000)) {
+    let needed = Infinity;
+    if (userData.endZone) {
+        if (startingZone > userData.endZone) {
+            return [false, zonesGained];
+        } else {
+            needed = userData.endZone - startingZone;
+        }
+    }
+    if ((zonesGained >= 360000) && (userData.minZones <= 756000) && (needed >= 252000)) {
         duration = "168h";
         zonesGained = Math.min(756000, zonesGained);
         rubyCost = 50;
-    } else if ((zonesGained >= 144000) && (userData.minZones <= 216000)) {
+    } else if ((zonesGained >= 144000) && (userData.minZones <= 216000) && (needed >= 108000)) {
         duration = "48h";
         zonesGained = Math.min(216000, zonesGained);
         rubyCost = 30;
-    } else if ((zonesGained >= 72000) && (userData.minZones <= 108000)) {
+    } else if ((zonesGained >= 72000) && (userData.minZones <= 108000) && (needed >= 36000)) {
         duration = "24h";
         zonesGained = Math.min(108000, zonesGained);
         rubyCost = 20;
@@ -541,6 +555,38 @@ function refresh(options) {
     let revivedTLs = false;
     let logGold;
     
+    if (userData.ascTime) {
+        let endZone = getSoftCap(options, startingZone, logCps, logXylBonus, gilds)[0];
+        let equivalentZones = userData.ascTime * 8050;
+        if (userData.borbLimit && endZone > userData.borbLimit) {
+            let remainder = endZone % 500;
+            let mpz = Math.floor((endZone - userData.borbLimit) / 500) / 10 + 2;
+            let monsters = (mpz - 2) * remainder / 1.083 + 1;
+            if (monsters <= equivalentZones) {
+                endZone -= remainder;
+                equivalentZones -= monsters;
+            } else {
+                endZone -= (equivalentZones / monsters) * remainder;
+                equivalentZones = 0;
+            }
+            mpz -= 0.1;
+            while (mpz > 2) {
+                let monsters = (mpz - 2) * 500 / 1.083 + 500;
+                if (monsters <= equivalentZones) {
+                    endZone -= 500;
+                    equivalentZones -= monsters;
+                } else {
+                    endZone -= (equivalentZones / monsters) * 500;
+                    equivalentZones = 0;
+                    break;
+                }
+                mpz -= 0.1;
+            }
+        }
+        endZone -= equivalentZones;
+        userData.endZone = Math.max(1, Math.floor(endZone));
+    }
+    
     do {
         if (!revivedTLs) {
             logGold = getMonsterGold(startingZone, userData.logHeroSouls)
@@ -583,6 +629,7 @@ function refresh(options) {
                 startingZone = timelapses[0] && timelapses[timelapses.length-1].zone || 40;;
                 break;
             } else {
+                if (userData.endZone) { break; }
                 let IEsucks = findNextHero(bestHero);
                 if (!IEsucks) { break; }
                 let nextHero = IEsucks[0];
@@ -770,7 +817,8 @@ function test() {
         xyliqilLevel: 0,
         chorLevel: 0,
         autoClickers: 0,
-        minZones: 20000
+        minZones: 20000,
+        ascTime: 0
     }
     for (let i = 100; i < 2e5; i *= 2) {
         options.logHeroSouls = i;
@@ -831,4 +879,6 @@ $(function() {
     $("#autoclickers").keyup(enterKey);
 
     $("#minZones").keyup(enterKey);
+    
+    $("#ascTime").keyup(enterKey);
 });
