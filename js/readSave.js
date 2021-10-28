@@ -1,49 +1,148 @@
-function readSave() {
-    readingSave = true;
-    let txt = $("#savegame").val();
-    let data;
-    if (txt.indexOf("Fe12NAfA3R6z4k0z") > -1 || txt.substring(0, 32) === "7a990d405d2c6fb93aa8fbb0ec1a3b23") {
-        if (txt.substring(0, 32) === "7a990d405d2c6fb93aa8fbb0ec1a3b23") {
-            try {
-                data = JSON.parse(pako.inflate(atob(txt.substring(32)), {to: "string"}));
-            } catch(e) {
-                $("#savegame").val("");
-                return;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="content-type" content="text/html;">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1 user-scalable=0">
+    <meta name="theme-color" content="#5060b0">
+    <meta name="Description" content="Plan your Timelapses for Clicker Heroes.">
+	<title>CH Timelapse Calculator</title>
+	<link rel="stylesheet" href="css/normalize.css">
+	<link rel="stylesheet" href="css/main-v004.css">
+    <link rel="stylesheet" href="css/light-theme-v004.css" id="theme-light" title="Light">
+    <link rel="stylesheet" href="css/dark-theme-v003.css" id="theme-dark" title="Dark" disabled>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" sizes="192x192" href="icons/chronos192.png">
+    <script>
+        if (localStorage) {
+            if (localStorage.getItem("darkmode")==="true") {
+                document.getElementById("theme-light").disabled = true;
+                document.getElementById("theme-dark").disabled = false;
             }
-        } else {
-            let result = txt.split("Fe12NAfA3R6z4k0z");
-            txt = "";
-            for (let i = 0; i < result[0].length; i += 2) {
-                txt += result[0][i];
-            }
-            data = JSON.parse(atob(txt));
         }
-        let primalSouls = data.primalSouls;
-        let logHeroSoulsOnAscend = 0;
-        if ($("#primal").is(":checked")) {
-            logHeroSoulsOnAscend = parseFloat(primalSouls.substr(primalSouls.lastIndexOf("e") + 1));
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('sw.js').then(function(registration) {
+                
+                }, function(err) {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
         }
-        let heroSoulsStart = data.stats.currentAscension.heroSoulsStart;
-        let logHeroSoulsCurrent =  parseFloat(heroSoulsStart.substr(heroSoulsStart.lastIndexOf("e") + 1));
-        
-        let useOnAscend = logHeroSoulsOnAscend > logHeroSoulsCurrent;
-        let heroSoulsInput = useOnAscend ? primalSouls : heroSoulsStart;
-        
-        console.log(logHeroSoulsOnAscend, logHeroSoulsCurrent)
-        
-        $("#hero_souls").val(heroSoulsInput);
-        let outsiders = data.outsiders.outsiders;
-        $("#xyliqil_level").val(outsiders[1].level);
-        $("#chor_level").val(outsiders[2].level);
-        $("#autoclickers").val(data.autoclickers);
-        
-        let IEsucks = refresh({
-            data: data,
-            heroSoulsInput: heroSoulsInput,
-            useOnAscend: useOnAscend
-        });
-    } else if (txt) {
-        $("#savegame").val("");
-    }
-}
-
+    </script>
+	<link rel="icon" type="image/png" href="Chronos.png">
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js" defer></script>
+</head>
+	<body>
+		<main class="container" role="main">
+			<div class="boxes">
+				<div class="box-12 collapsible">
+					<div class="panel">
+						<div class="title">Info</div>
+						<div class="content">
+							<p>Send your Feedback to: <a href="https://redd.it/7z4982">https://redd.it/7z4982</a></p>
+							<p>Keep at least one Auto Clicker unassigned or you will not benefit from Nogardnit, causing you to lose thousands of zones. (last tested Feb 28 2021)</p>
+							<p>Hover over the last hero to see when you unlock it!</p>
+							<p>I hope this is accurate</p>
+							<p>NOTE: You must import your save everytime you want to use this calc because that is the only way for the dogcog and max qa zone values to function properly</p>
+							<p>Won't be bothered to add kuma relics value (this means you really can't listen to the "You will have more than 2 mpz at zone whatever")</p>
+						</div>
+					</div>
+				</div>
+                <div class="box-12 warning">
+                    <div id="ancientCheckResults">
+                        
+                    </div>
+                </div>
+				<div class="box-4">
+					<div class="panel">
+						<div class="title">Inputs</div>
+						<div class="content">
+							<div class="numberInput">
+								<label for="hero_souls">(log)HeroSouls:</label>
+								<input value="150" id="hero_souls" type="text">
+							</div>
+							<div class="numberInput">
+								<label for="dogcog_level">Dogcog:</label>
+								<input value="0" id="dogcog_level" type="text">
+							</div>
+							<div class="numberInput">
+								<label for="chor_level">Chor'gorloth:</label>
+								<input value="0" id="chor_level" type="text">
+							</div>
+                            <div class="numberInput">
+								<label for="autoclickers">Auto Clickers:</label>
+								<input value="0" id="autoclickers" type="text">
+							</div>
+							<div class="numberInput">
+								<label for="mostZonesOverOneMil">Max QA Zone:</label>
+								<input value="0" id="mostZonesOverOneMil" type="text">
+							</div>
+                            <input type="checkbox" id="dark" class="checkbox" onclick="changeTheme()"><label for="dark">Dark Theme</label>
+                            <br>
+                            <input type="checkbox" id="primal" class="checkbox" onclick="readSave()"><label for="primal">Use Primal Souls</label>
+							<br><button id="calculateButton" onclick="refresh()">Calculate</button>
+                            <hr>
+                            <button id="showAdvanced" onclick="showAdvancedClick()">Show Advanced Settings</button>
+                            <div id="advancedSettings">
+								<div class="numberInput">
+									<label for="minZones">Min Zones:</label>
+									<input id="minZones" type="text" style="font-size:12px;">
+								</div>
+                                <div class="numberInput">
+									<label for="ascTime">Ascension Time(h):</label>
+									<input id="ascTime" type="text" style="font-size:12px;">
+								</div>
+                                <div class="numberInput">
+									<label for="QAStrat">QA Strategy:</label>
+									<select id="QAStrat" onChange="refresh();">
+                                        <option value="perRuby">Zones Per Ruby</option>
+                                        <option value="highest">Highest Zone</option>
+                                    </select>
+								</div>
+								<button id="defaultButton" onclick="defaultClick()">Set to Default</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="box-8" id="results">
+					<div class="panel">
+						<div class="title">Results</div>
+						<div class="content">
+							<table id="TimelapsesTable" cellspacing="0">
+								<thead><tr>
+									<th>Duration</th>
+									<th>Hero</th>
+									<th>Level</th>
+									<th>Zone</th>
+								</tr></thead>
+								<tbody>
+									
+								</tbody>
+							</table>
+							<br>
+							<div id="RubyCost"></div>
+							<div id="Recommend"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="boxes">
+				<div class="box-4">
+					<div class="panel">
+						<div class="title">Read Save</div>
+						<div class="content">
+                            <label for="savegame">Import your save</label>
+							<textarea id="savegame" placeholder="Paste your save game here" autofocus onclick="this.focus();this.select()"></textarea>
+							<br><button id="readSaveButton" onclick="readSave()">Read Save</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
+		<script src="js/pako.min.js" defer></script>
+		<script src="js/readSave.js" defer></script>
+        <script src="js/checkAncients.js" defer></script>
+		<script src="js/main.js" defer></script>
+	</body>
+</html>
