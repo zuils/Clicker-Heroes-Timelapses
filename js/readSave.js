@@ -34,8 +34,10 @@ function readSave() {
         $("#hero_souls").val(heroSoulsInput);
         let outsiders = data.outsiders.outsiders;
         $("#xyliqil_level").val(outsiders[1].level);
+        $("#dogcog_level").val(data.ancients.ancients[11].level);
         $("#chor_level").val(outsiders[2].level);
         $("#autoclickers").val(data.autoclickers);
+        $("#mostZonesOverOneMil").val(data.mostZonesOverOneMillion);
         
         let IEsucks = refresh({
             data: data,

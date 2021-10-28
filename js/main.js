@@ -52,10 +52,7 @@ function getInputs() {
         return [-1, 0, 0];
     }
 
-    let xyliqilLevel = parseFloat($("#xyliqil_level").val() || 0);
-    if (!(xyliqilLevel >= 0)) { xyliqilLevel = 0; }
-    xyliqilLevel = Math.floor(xyliqilLevel);
-    $("#xyliqil_level").val(xyliqilLevel.toString().replace(/\+/g,''));
+    let xyliqilLevel = 0;
 
     let chorLevel = parseFloat($("#chor_level").val() || 0);
     if (!(chorLevel >= 0)) { chorLevel = 0; }
@@ -90,89 +87,117 @@ function getInputs() {
 }
 
 let e11Levels = {
-    Rose1: 602000,
-    Rose2: 1204000,
-    Rose3: 1806000,
-    Rose4: 2408000,
-    Rose5: 3010000,
-    Sophia1: 677250,
-    Sophia2: 1279250,
-    Sophia3: 1881250,
-    Sophia4: 2483250,
-    Sophia5: 3085250,
-    Blanche1: 752500,
-    Blanche2: 1354500,
-    Blanche3: 1956500,
-    Blanche4: 2558500,
-    Blanche5: 3160500,
-    Dorothy1: 827750,
-    Dorothy2: 1429750,
-    Dorothy3: 1956500,
-    Dorothy4: 2633750,
-    Dorothy5: 3235750
+    Rose1: 724000,
+    Rose2: 1444800,
+    Rose3: 2167200,
+    Rose4: 2889600,
+    Rose5: 3612000,
+    Rose6: 4334400,
+    Sophia1: 758525,
+    Sophia2: 1480925,
+    Sophia3: 2203325,
+    Sophia4: 2925725,
+    Sophia5: 3648125,
+    Sophia6: 4370525,
+    Blanche1: 794650,
+    Blanche2: 1517050,
+    Blanche3: 2239450,
+    Blanche4: 2961850,
+    Blanche5: 3684250,
+    Blanche6: 4406650,
+    Dorothy1: 830775,
+    Dorothy2: 1553175,
+    Dorothy3: 2275575,
+    Dorothy4: 2997975,
+    Dorothy5: 3720375,
+    Dorothy6: 4442775
 };
 let e11Dps = {
-    Rose: Math.log10(8.586) + 148592,
-    Sophia: Math.log10(6.326) + 158831,
-    Blanche: Math.log10(4.661) + 178104,
-    Dorothy: Math.log10(3.434) + 199738
+    Rose: Math.log10(8.586) + 150592,
+    Sophia: Math.log10(6.326) + 170223,
+    Blanche: Math.log10(4.661) + 189875,
+    Dorothy: Math.log10(3.434) + 209500
 };
 let e11Upgrade = 5798;
 let e11CostScale = Math.log10(1.22);
 let e11DpsScale = Math.log10(1000);
 let costThousand = Math.log10(1.07) * 1000;
-let dogcog = 10;
+let dogcogLevel = parseFloat($("#dogcog_level").val() || 0);
+if (!(dogcogLevel >= 0)) { dogcogLevel = 0; }
+dogcogLevel = Math.floor(dogcogLevel);
+$("#dogcog_level").val(dogcogLevel.toString().replace(/\+/g,''));
+//dogcog level ** .00432138378
+let dogcog = .00432138373 * dogcogLevel;
 let heroCosts = {
     Samurai: -10000,
-    Atlas: 55 + Math.log10(1.07) * 725 - dogcog,
-    Terra: 70 + costThousand - dogcog,
-    Phthalo: 85 + costThousand - dogcog,
-    Orntchya: 100 + costThousand - dogcog,
-    Lilin: 115 + costThousand - dogcog,
-    Cadmia: 130 + costThousand - dogcog,
-    Alabaster: 145 + costThousand - dogcog,
-    Astrea: 160 + costThousand - dogcog,
-    Chiron: 175 + costThousand - dogcog,
-    Moloch: 190 + costThousand - dogcog,
-    BomberMax: 205 + costThousand - dogcog,
-    Gog: 220 + costThousand - dogcog,
-    Wepwawet: 235 + costThousand - dogcog,
-    BettyClicker: 235 + costThousand * 1.5 - dogcog,
-    KingMidas: 235 + costThousand * 2 - dogcog,
-    Wepwawet2: 235 + costThousand * 5 - dogcog,
-    Tsuchi: 500 - dogcog,
-    Skogur: 1000 - dogcog,
-    Moeru: 2000 - dogcog,
-    Zilar: 4000 - dogcog,
-    Madzi: 8000 - dogcog,
+    Atlas: (55 + Math.log10(1.07) * 725) - dogcog,
+    Terra: (70 + costThousand) - dogcog,
+    Phthalo: (85 + costThousand) - dogcog,
+    Orntchya: (100 + costThousand) - dogcog,
+    Lilin: (115 + costThousand) - dogcog,
+    Cadmia: (130 + costThousand) - dogcog,
+    Alabaster: (145 + costThousand) - dogcog,
+    Astrea: (160 + costThousand) - dogcog,
+    Chiron: (175 + costThousand) - dogcog,
+    Moloch: (190 + costThousand) - dogcog,
+    BomberMax: (205 + costThousand) - dogcog,
+    Gog: (220 + costThousand) - dogcog,
+    Wepwawet: (235 + costThousand) - dogcog,
+    BettyClicker: (235 + costThousand) * 1.5 - dogcog,
+    KingMidas: (235 + costThousand) * 2 - dogcog,
+    Wepwawet2: (235 + costThousand) * 5 - dogcog,
+    Tsuchi0: 500 - dogcog,
+    Tsuchi1: 544.1112 - dogcog,
+    Tsuchi2: 588.1324 - dogcog,
+    Skogur0: 1000 - dogcog,
+    Skogur1: 1073.2691 - dogcog,
+    Skogur2: 1146.7753 - dogcog,
+    Skogur3: 1293.6432 - dogcog,
+    Skogur4: 1587.4427 - dogcog,
+    Moeru0: 2000 - dogcog,
+    Moeru1: 2117.3204 - dogcog,
+    Moeru2: 2235.1098 - dogcog,
+    Moeru3: 2470.1291 - dogcog,
+    Moeru4: 2940.1784 - dogcog,
+    Zilar0: 4000 - dogcog,
+    Zilar1: 4176.1876 - dogcog,
+    Zilar2: 4352.3766 - dogcog,
+    Zilar3: 4705.1518 - dogcog,
+    Zilar4: 5410.2465 - dogcog,
+    Madzi0: 8000 - dogcog,
+    Madzi1: 8220.2233 - dogcog,
+    Madzi2: 8440.5336 - dogcog,
+    Madzi3: 8881.3047 - dogcog,
+    Madzi4: 9762.9937 - dogcog,
     Xavira0: 14000 - dogcog,
-    Xavira1: 18407.5667 - dogcog,
-    Xavira2: 19435.9989 - dogcog,
-    Xavira3: 21492.8633 - dogcog,
-    Xavira4: 22521.2955 - dogcog,
-    Xavira5: 23872.9493 - dogcog,
+    Xavira1: 18407.3445 - dogcog,
+    Xavira2: 19435.9321 - dogcog,
+    Xavira3: 21492.6822 - dogcog,
+    Xavira4: 22521.1845 - dogcog,
+    Xavira5: 23872.8316 - dogcog,
     Cadu0: 25500 - dogcog,
-    Ceus1: 27204.2591 - dogcog,
-    Cadu1: 28908.5182 - dogcog,
-    Ceus2: 30789.08 - dogcog,
-    Cadu2: 32845.9444 - dogcog,
-    Ceus3: 35079.1115 - dogcog,
-    Cadu3: 37473.8894 - dogcog,
-    Ceus4: 40044.97 - dogcog,
-    Cadu4: 42777.6613 - dogcog,
+    Ceus1: 27204.1697 - dogcog,
+    Cadu1: 28908.3081 - dogcog,
+    Ceus2: 30789.1123 - dogcog,
+    Cadu2: 32845.8223 - dogcog,
+    Ceus3: 35079.1208 - dogcog,
+    Cadu3: 37473.7244 - dogcog,
+    Ceus4: 40044.8721 - dogcog,
+    Cadu4: 42777.4284 - dogcog,
     Maw0: 45500 - dogcog,
-    Maw1: 48761.5993 - dogcog,
-    Maw2: 52184.8094 - dogcog,
-    Maw3: 55784.3222 - dogcog,
-    Maw4: 59545.4457 - dogcog,
-    Maw5: 63497.5683 - dogcog,
-    Maw6: 67611.2927 - dogcog,
-    Yachiyl1: 76627.945 - dogcog,
-    Yachiyl2: 81432.1926 - dogcog,
-    Yachiyl3: 86398.0511 - dogcog,
-    Yachiyl4: 91540.2122 - dogcog,
-    Yachiyl5: 96858.6759 - dogcog,
-    Yachiyl6: 102338.7505 - dogcog
+    Maw1: 48761.3714 - dogcog,
+    Maw2: 52184.6026 - dogcog,
+    Maw3: 55784.1962 - dogcog,
+    Maw4: 59545.2608 - dogcog,
+    Maw5: 63497.3423 - dogcog,
+    Maw6: 67611.1833 - dogcog,
+    Yachiyl1: 76627.8233 - dogcog,
+    Yachiyl2: 81432.1456 - dogcog,
+    Yachiyl3: 86398.1051 - dogcog,
+    Yachiyl4: 91540.1523 - dogcog,
+    Yachiyl5: 96858.4431 - dogcog,
+    Yachiyl6: 102338.5261 - dogcog,
+    Yachiyl7: 107995.1253 - dogcog,
 };
 let heroCosts1 = {
     Samurai: 5 - dogcog,
@@ -202,9 +227,9 @@ let heroCosts1 = {
     Maw: 45500 - dogcog,
     Yachiyl: 72000 - dogcog,
     Rose: 108000 - dogcog,
-    Sophia: 114500 - dogcog,
-    Blanche: 127500 - dogcog,
-    Dorothy: 142200 - dogcog
+    Sophia: 121250 - dogcog,
+    Blanche: 134500 - dogcog,
+    Dorothy: 147750 - dogcog
 };
 let heroBaseDps = {
     Samurai: 5.2858,
@@ -224,11 +249,29 @@ let heroBaseDps = {
     BettyClicker: 11.0038,
     KingMidas: 18.7950,
     Wepwawet2: 201.7295,
-    Tsuchi: 427.7216,
-    Skogur: 848.7439,
-    Moeru: 1681.6906,
-    Zilar: 3336.7651,
-    Madzi: 6634.3112,
+    Tsuchi0: 425.182,
+    Tuschi1: 426.3953,
+    Tuschi2: 427.7703,
+    Skogur0: 846.1341,
+    Skogur1: 847.1498,
+    Skogur2: 848.1553,
+    Skogur3: 849.1573,
+    Skogur4: 850.2298,
+    Moeru0: 1678.9985,
+    Moeru1: 1680.1096,
+    Moeru2: 1681.2059,
+    Moeru3: 1682.3374,
+    Moeru4: 1682.4349,
+    Zilar0: 3333.7283,
+    Zilar1: 3335.7387,
+    Zilar2: 3335.7588,
+    Zilar3: 3335.7698,
+    Zilar4: 3335.8496,
+    Madzi0: 6630.5366,
+    Madzi1: 6631.3784,
+    Madzi2: 6632.3824,
+    Madzi3: 6633.5065,
+    Madzi4: 6634.8346,
     Xavira0: 11683.4585,
     Xavira1: 12306.4585,
     Xavira2: 12954.4585,
@@ -256,12 +299,13 @@ let heroBaseDps = {
     Yachiyl3: 107387.9278,
     Yachiyl4: 110485.9278,
     Yachiyl5: 113683.9278,
-    Yachiyl6: 116981.9278
+    Yachiyl6: 116981.9278,
+    Yachiyl7: 116982.0034
 };
 
 // Populate e11 heroes
 let newHeroes = ["Rose", "Sophia", "Blanche", "Dorothy"];
-for (let l = 0; l < 6; l++) {
+for (let l = 0; l < 7; l++) {
     for (let q = 0; q < 4; q++) {
         let hero = newHeroes[q];
         let heroCost = heroCosts1[hero];
@@ -272,7 +316,7 @@ for (let l = 0; l < 6; l++) {
         heroBaseDps[heroUpgrade] = heroDps + e11Upgrade * l + 1.861426728;
     }
 }
-heroCosts["Rose0"] += Math.log10(1.22) * 9700;
+// heroCosts["Rose0"] += Math.log10(1.22) * 9700;
 
 function findBestHero(logGold) {
     let bestHero;
@@ -299,10 +343,10 @@ function findNextHero(currentHero) {
             if (s === "Xavira0") { heroType = "e10"; }
             if (s === "Rose0") { heroType = "e11"; }
             if (heroCosts[s] > logGold) {
-                if (s !== "Dorothy1" && s !== "Dorothy2" && s !== "dorothy4") {
+                // if (s !== "Dorothy1" && s !== "Dorothy2" && s !== "dorothy4") {
                     nextHero = s;
                     break;
-                }
+                // }
             }
         }
     }
@@ -783,11 +827,15 @@ function refresh(options) {
     
     // Recommended action
     let action;
+    let maxQAZone = parseFloat($("#mostZonesOverOneMil").val() || 1e6);
+    maxQAZone = Math.floor(maxQAZone);
+    maxQAZone = Math.floor(1e6 + (maxQAZone * .2));
+    $("#mostZonesOverOneMil").val(maxQAZone.toString().replace(/\+/g,''));
     if (altAction) {
         action = altAction;
     } else if(numTLs === 0) {
         action = "Save your rubies.";
-    } else if(previousHZT > 1e6) {
+    } else if(previousHZT > maxQAZone) {
         action = "Use Timelapses as shown above.";
     } else if(userData.QAStrat === "perRuby"){
         let rubyCostTL = rubyCost - numTLs * 2; //consider mercenaries (estimated 2 rubies per TL)
@@ -872,8 +920,6 @@ $(function() {
     
     $("#hero_souls").keyup(enterKey);
 
-    $("#xyliqil_level").keyup(enterKey);
-
     $("#chor_level").keyup(enterKey);
 
     $("#autoclickers").keyup(enterKey);
@@ -881,4 +927,4 @@ $(function() {
     $("#minZones").keyup(enterKey);
     
     $("#ascTime").keyup(enterKey);
-});
+})
