@@ -127,7 +127,7 @@ if (!(dogcogLevel >= 0)) { dogcogLevel = 0; }
 dogcogLevel = Math.floor(dogcogLevel);
 $("#dogcog_level").val(dogcogLevel.toString().replace(/\+/g,''));
 //dogcog level ** .00432138378
-let dogcog = .00432138373 * dogcogLevel;
+let dogcog = (0.00432137378 * dogcogLevel);
 let heroCosts = {
     Samurai: -10000,
     Atlas: (55 + Math.log10(1.07) * 725) - dogcog,
@@ -462,19 +462,19 @@ function getNextTL(startingZone) {
     if ((zonesGained >= 360000) && (userData.minZones <= 756000) && (needed >= 252000)) {
         duration = "168h";
         zonesGained = Math.min(756000, zonesGained);
-        rubyCost = 50;
+        rubyCost = 60;
     } else if ((zonesGained >= 144000) && (userData.minZones <= 216000) && (needed >= 108000)) {
         duration = "48h";
         zonesGained = Math.min(216000, zonesGained);
-        rubyCost = 30;
+        rubyCost = 35;
     } else if ((zonesGained >= 72000) && (userData.minZones <= 108000) && (needed >= 36000)) {
         duration = "24h";
         zonesGained = Math.min(108000, zonesGained);
-        rubyCost = 20;
+        rubyCost = 25;
     } else if (userData.minZones <= 36000) {
         duration = "8h";
         zonesGained = Math.min(36000, zonesGained);
-        rubyCost = 10;
+        rubyCost = 15;
     } else {
         return [false, zonesGained];
     }
