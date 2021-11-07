@@ -334,7 +334,7 @@ function findBestHero(logGold) {
 }
 
 function findNextHero(currentHero) {
-    if (currentHero === "Dorothy5") return false;
+    if (currentHero === "Dorothy6") return false;
     let logGold = heroCosts[currentHero];
     let nextHero;
     let heroType = "old";
