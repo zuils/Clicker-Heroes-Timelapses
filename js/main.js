@@ -715,12 +715,12 @@ function refresh(options) {
     let toappend = "";
     let t = 0;
     if (timelapses[4] && timelapses[4].duration === "168h") {
-        for (let d = 4; d < timelapses.length; d++) {
+        for (let d = 99; d < timelapses.length; d++) {
             if (timelapses[d].duration === "168h") {
                 t = d;
             }
         }
-        timelapses[t].duration += " x" + (t + 1);
+        //timelapses[t].duration += " x" + (t + 1);
         timelapses[t].zoneDisplay = timelapses[t].zone.toLocaleString() + " (+" + (timelapses[t].zone - 40).toLocaleString() + ")";
     }
     for (t; t < timelapses.length; t++) {
