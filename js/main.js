@@ -418,19 +418,19 @@ function getNextTL(startingZone) {
     if ((zonesGained >= 360000) && (userData.minZones <= 756000) && (needed >= 252000)) {
         duration = "168h";
         zonesGained = Math.min(756000, zonesGained);
-        rubyCost = 50;
+        rubyCost = 500;
     } else if ((zonesGained >= 144000) && (userData.minZones <= 216000) && (needed >= 108000)) {
         duration = "48h";
         zonesGained = Math.min(216000, zonesGained);
-        rubyCost = 30;
+        rubyCost = 300;
     } else if ((zonesGained >= 72000) && (userData.minZones <= 108000) && (needed >= 36000)) {
         duration = "24h";
         zonesGained = Math.min(108000, zonesGained);
-        rubyCost = 20;
+        rubyCost = 200;
     } else if (userData.minZones <= 36000) {
         duration = "8h";
         zonesGained = Math.min(36000, zonesGained);
-        rubyCost = 10;
+        rubyCost = 100;
     } else {
         return [false, zonesGained];
     }
@@ -715,12 +715,14 @@ function refresh(options) {
     let toappend = "";
     let t = 0;
     if (timelapses[4] && timelapses[4].duration === "168h") {
-        for (let d = 4; d < timelapses.length; d++) {
-            if (timelapses[d].duration === "168h") {
-                t = d;
+        if (!$("#tls").is(":checked")) {
+            for (let d = 4; d < timelapses.length; d++) {
+                if (timelapses[d].duration === "168h") {
+                    t = d;
+                }
             }
+            timelapses[t].duration += " x" + (t + 1);
         }
-        timelapses[t].duration += " x" + (t + 1);
         timelapses[t].zoneDisplay = timelapses[t].zone.toLocaleString() + " (+" + (timelapses[t].zone - 40).toLocaleString() + ")";
     }
     for (t; t < timelapses.length; t++) {
@@ -864,6 +866,18 @@ $(setDefaults);
 $(function() {
     if (localStorage) {
         $("#dark").prop("checked", localStorage.getItem("darkmode")==="true");
+        
+        if (localStorage.getItem("tlsState") === "checked") {
+            $("#tls").prop("checked", true);
+        }
+
+        $("#tls").change(function() {
+            if ($(this).is(":checked")) {
+                localStorage.setItem("tlsState", "checked");
+            } else {
+                localStorage.setItem("tlsState", "unchecked");
+            }
+        });
     }
 
     $('.collapsible .title').click(function(){

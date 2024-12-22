@@ -510,19 +510,19 @@ function refresh(test, logHeroSouls, xyliqilLevel, chorLevel, autoClickers) {
             if ((zonesGained > 360000) && (this.minZones <= 756000)) {
                 duration = "168h";
                 zonesGained = Math.min(756000, zonesGained);
-                rubyCost += 50;
+                rubyCost += 500;
             } else if ((zonesGained > 144000) && (this.minZones <= 216000)) {
                 duration = "48h";
                 zonesGained = Math.min(216000, zonesGained);
-                rubyCost += 30;
+                rubyCost += 300;
             } else if ((zonesGained > 72000) && (this.minZones <= 108000)) {
                 duration = "24h";
                 zonesGained = Math.min(108000, zonesGained);
-                rubyCost += 20;
+                rubyCost += 200;
             } else if (this.minZones <= 36000) {
                 duration = "8h";
                 zonesGained = Math.min(36000, zonesGained);
-                rubyCost += 10;
+                rubyCost += 100;
             } else { break; }
             highestZone = startingZone + zonesGained;
 
@@ -633,5 +633,13 @@ function changeTheme() {
 $(setDefaults);
 if (localStorage) {
     $("#dark").prop("checked", localStorage.getItem("darkmode")==="true");
+
+    $("#tls").change(function() {
+        if ($(this).is(":checked")) {
+            localStorage.setItem("tlsState", "checked");
+        } else {
+            localStorage.setItem("tlsState", "unchecked");
+        }
+    });
 }
 $(changeTheme);
