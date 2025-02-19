@@ -524,12 +524,7 @@ function refresh(options) {
     if (!options.test) console.log(userData);
     
     
-    let logCps = Math.max(1 + Math.log10(userData.autoClickers), 1 + (userData.autoClickers - 1) * Math.log10(1.5));
-    if (logCps >= 307) {
-        logCps = 2;
-        if (!options.test)
-            console.log("Too many ACs, assign a few on the monster only or progress will be broken.");
-    }
+    let logCps = Math.min(Math.max(1 + Math.log10(userData.autoClickers), 1 + (userData.autoClickers - 1) * Math.log10(1.5)), Math.log10(1.7976931348623157) + 308);
     let logXylBonus = Math.log10(1.5) * userData.xyliqilLevel;
     
     let activeAdvantage = userData.logHeroSouls * 0.5 + logCps -0.3701813447471219227682305382593 - Math.log10(1.5) * 3.3895 * userData.xyliqilLevel;
